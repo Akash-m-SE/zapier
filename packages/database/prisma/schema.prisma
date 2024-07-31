@@ -18,6 +18,9 @@ model User {
   name     String
   email    String
   password String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Zap {
@@ -26,6 +29,9 @@ model Zap {
   trigger   Trigger?
   actions   Action[]
   zapRuns   ZapRun[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Trigger {
@@ -34,6 +40,9 @@ model Trigger {
   triggerId String
   type      AvailableTrigger @relation(fields: [triggerId], references: [id])
   zap       Zap              @relation(fields: [zapId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model AvailableTrigger {
@@ -48,6 +57,11 @@ model Action {
   zap      Zap             @relation(fields: [zapId], references: [id])
   actionId String
   type     AvailableAction @relation(fields: [actionId], references: [id])
+
+  sortingOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model AvailableAction {
@@ -57,11 +71,15 @@ model AvailableAction {
 }
 
 model ZapRun {
-  id           String        @id @default(uuid())
-  zapId        String
-  metadata     Json
+  id       String @id @default(uuid())
+  zapId    String
+  metadata Json
+
   zap          Zap           @relation(fields: [zapId], references: [id])
   zapRunOutBox ZapRunOutbox?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ZapRunOutbox {
