@@ -1,0 +1,27 @@
+{
+  "name": "hooks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "tsc -b && node dist/index.js",
+    "build": "esbuild src/index.ts --platform=node --bundle --outdir=dist",
+    "dev": "npm run build && node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.17.0",
+    "@repo/db": "*",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.12",
+    "esbuild": "^0.23.0",
+    "express": "^4.19.2",
+    "typescript": "^5.5.4"
+  },
+  "devDependencies": {
+    "prisma": "^5.17.0"
+  }
+}
