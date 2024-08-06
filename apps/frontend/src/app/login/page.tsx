@@ -48,7 +48,7 @@ const Login = () => {
               onClick={() => {
                 router.push("/enterprise");
               }}
-              className="text-base font-semibold text-white bg-blue-800 w-full sm:w-[30vw] md:w-[30vw] lg:w-[20vw] h-[44px] flex justify-center items-center hover:bg-black duration-500"
+              className="text-base font-semibold text-white bg-blue-800 w-full sm:w-[30vw] md:w-[30vw] lg:w-[20vw] h-[44px] flex justify-center items-center hover:bg-blue-600 duration-500"
             >
               Explore Zapier Enterprise
             </LinkButton>
