@@ -18,7 +18,7 @@ model User {
   name     String
   email    String
   password String
-  zaps Zap[]
+  zaps     Zap[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -53,6 +53,7 @@ model Trigger {
 model AvailableTrigger {
   id       String    @id @default(uuid())
   name     String
+  image    String
   triggers Trigger[]
 }
 
@@ -72,6 +73,7 @@ model Action {
 model AvailableAction {
   id      String   @id @default(uuid())
   name    String
+  image   String
   actions Action[]
 }
 

@@ -106,6 +106,8 @@ const ZapTable = ({ zaps }: { zaps: Zap[] }) => {
           <div className="flex-1 flex">
             <Image
               src={z.trigger.type.image}
+              width={100}
+              height={100}
               className="w-[30px] h-[30px]"
               alt="image"
             />
@@ -113,6 +115,8 @@ const ZapTable = ({ zaps }: { zaps: Zap[] }) => {
               <Image
                 src={x.type.image}
                 className="w-[30px] h-[30px]"
+                width={100}
+                height={100}
                 alt="image"
                 key={x.id}
               />

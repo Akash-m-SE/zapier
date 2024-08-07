@@ -50,37 +50,35 @@ const CreateNewZap = () => {
     null,
   );
 
+  const publishHandler = async () => {
+    if (!selectedTrigger?.id) {
+      return;
+    }
+
+    const response = await axios.post(
+      `${BACKEND_URL}/api/v1/zap`,
+      {
+        availableTriggerId: selectedTrigger.id,
+        triggerMetadata: {},
+        actions: selectedActions.map((a) => ({
+          availableActionId: a.availableActionId,
+          actionMetadata: a.metadata,
+        })),
+      },
+      {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      },
+    );
+
+    router.push("/dashboard");
+  };
+
   return (
     <div>
       <div className="flex justify-end bg-slate-200 p-4">
-        <PrimaryButton
-          onClick={async () => {
-            if (!selectedTrigger?.id) {
-              return;
-            }
-
-            const response = await axios.post(
-              `${BACKEND_URL}/api/v1/zap`,
-              {
-                availableTriggerId: selectedTrigger.id,
-                triggerMetadata: {},
-                actions: selectedActions.map((a) => ({
-                  availableActionId: a.availableActionId,
-                  actionMetadata: a.metadata,
-                })),
-              },
-              {
-                headers: {
-                  Authorization: localStorage.getItem("token"),
-                },
-              },
-            );
-
-            router.push("/dashboard");
-          }}
-        >
-          Publish
-        </PrimaryButton>
+        <PrimaryButton onClick={() => publishHandler()}>Publish</PrimaryButton>
       </div>
       <div className="w-full min-h-screen bg-slate-200 flex flex-col justify-center">
         <div className="flex justify-center w-full">
@@ -208,9 +206,9 @@ function Modal({
               >
                 <path
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
                 />
               </svg>
@@ -261,11 +259,12 @@ function Modal({
                           });
                         }
                       }}
-                      className="flex border p-4 cursor-pointer hover:bg-slate-100"
+                      className="flex gap-2 border p-4 cursor-pointer hover:bg-slate-100"
                     >
                       <Image
                         src={image}
                         width={30}
+                        height={30}
                         className="rounded-full"
                         alt="image"
                       />
