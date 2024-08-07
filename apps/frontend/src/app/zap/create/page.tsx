@@ -4,6 +4,7 @@ import { BACKEND_URL } from "@/app/config";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { Input } from "@/components/Input";
 import { ZapCell } from "@/components/ZapCell";
+
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -92,7 +93,7 @@ const CreateNewZap = () => {
         </div>
         <div className="w-full pt-2 pb-2">
           {selectedActions.map((action, index) => (
-            <div className="pt-2 flex justify-center" key={index}>
+            <div key={index} className="pt-2 flex justify-center">
               <ZapCell
                 onClick={() => {
                   setSelectedModalIndex(action.index);
@@ -165,7 +166,7 @@ const CreateNewZap = () => {
   );
 };
 
-function Modal({
+const Modal = ({
   index,
   onSelect,
   availableItems,
@@ -173,7 +174,7 @@ function Modal({
   index: number;
   onSelect: (props: null | { name: string; id: string; metadata: any }) => void;
   availableItems: { id: string; name: string; image: string }[];
-}) {
+}) => {
   const [step, setStep] = useState(0);
   const [selectedAction, setSelectedAction] = useState<{
     id: string;
@@ -227,7 +228,7 @@ function Modal({
               />
             )}
 
-            {step === 1 && selectedAction?.id === "send-sol" && (
+            {step === 1 && selectedAction?.id === "solana" && (
               <SolanaSelector
                 setMetadata={(metadata) => {
                   onSelect({
@@ -259,7 +260,7 @@ function Modal({
                           });
                         }
                       }}
-                      className="flex gap-2 border p-4 cursor-pointer hover:bg-slate-100"
+                      className="flex border p-4 cursor-pointer hover:bg-slate-100 gap-2"
                     >
                       <Image
                         src={image}
@@ -279,7 +280,7 @@ function Modal({
       </div>
     </div>
   );
-}
+};
 
 const EmailSelector = ({
   setMetadata,
