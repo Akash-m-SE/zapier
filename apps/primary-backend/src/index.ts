@@ -4,8 +4,11 @@ import { userRouter } from "./router/user.routes";
 import { zapRouter } from "./router/zap.routes";
 import { triggerRouter } from "./router/trigger.routes";
 import { actionRouter } from "./router/action.routes";
+import dotenv from "dotenv";
 
-const PORT = 3001;
+dotenv.config();
+
+const PORT = process.env.PORT;
 
 const app = express();
 app.use(express.json());

@@ -14,9 +14,10 @@
   "license": "ISC",
   "dependencies": {
     "@repo/db": "*",
-    "@prisma/client": "^5.17.0",    
+    "@prisma/client": "^5.17.0",
     "@types/express": "^4.17.21",
     "@types/node": "^20.14.12",
+    "dotenv": "^16.4.5",
     "esbuild": "^0.23.0",
     "express": "^4.19.2",
     "typescript": "^5.5.4"

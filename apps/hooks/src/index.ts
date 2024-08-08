@@ -1,10 +1,13 @@
 import express from "express";
 import prisma from "./lib/prisma";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-const PORT = 3000;
+const PORT = process.env.PORT;
 
 app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
   const userId = req.params.userId;
@@ -40,5 +43,5 @@ app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log("Server is listening on port 3000");
+  console.log(`Server is listening on port ${PORT}`);
 });
