@@ -1,22 +1,37 @@
-import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import { asyncHandler } from "../utils/asyncHandler";
+import prisma from "../lib/prisma";
 import { ApiError } from "../utils/ApiError";
+import { asyncHandler } from "../utils/asyncHandler";
+import { Request, Response, NextFunction } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
-const authMiddleware = asyncHandler(
+export const authMiddleware = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization as string;
+    const token =
+      req.cookies.accessToken ||
+      req.cookies.refreshToken ||
+      req.header("Authorization")?.replace("Bearer ", "");
 
-    const payload = jwt.verify(token, process.env.JWT_PASSWORD as string);
-
-    if (!payload) {
+    if (!token) {
       throw new ApiError(401, "Unauthorized Request!");
     }
 
-    //@ts-ignore
-    req.id = payload.id;
+    const decodedToken = jwt.verify(
+      token,
+      process.env.ACCESS_TOKEN_SECRET as string,
+    ) as JwtPayload;
+
+    // console.log("decoded token = ", decodedToken);
+
+    const user = await prisma.user.findFirst({
+      where: {
+        id: decodedToken.id,
+      },
+    });
+
+    if (!user) {
+      throw new ApiError(401, "Invalid Access Token!");
+    }
+
     next();
   },
 );
-
-export { authMiddleware };

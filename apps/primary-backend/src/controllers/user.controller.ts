@@ -1,10 +1,15 @@
 import prisma from "../lib/prisma";
 import { SigninSchema, SignupSchema } from "../types";
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
 import { ApiResponse } from "../utils/ApiResponse";
+import { hashPassword, isPasswordCorrect } from "../services/passwordService";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../services/tokenService";
 
 const signupUser = asyncHandler(async (req: Request, res: Response) => {
   const body = req.body;
@@ -17,7 +22,7 @@ const signupUser = asyncHandler(async (req: Request, res: Response) => {
 
   const userExists = await prisma.user.findFirst({
     where: {
-      email: parsedData.data.username,
+      email: parsedData.data.email,
     },
   });
 
@@ -26,11 +31,12 @@ const signupUser = asyncHandler(async (req: Request, res: Response) => {
   }
 
   // TODO: encrypt the passwords before storing them in db
+  const hashedPassword = await hashPassword(parsedData.data.password);
 
   const user = await prisma.user.create({
     data: {
-      email: parsedData.data.username,
-      password: parsedData.data.password,
+      email: parsedData.data.email,
+      password: hashedPassword,
       name: parsedData.data.name,
     },
     select: {
@@ -61,44 +67,54 @@ const signupUser = asyncHandler(async (req: Request, res: Response) => {
 
 const signinUser = asyncHandler(async (req: Request, res: Response) => {
   const body = req.body;
+
   const parsedData = SigninSchema.safeParse(body);
 
   if (!parsedData.success) {
-    throw new ApiError(411, "Incorrect Inputs");
+    throw new ApiError(411, "Incorrect Inputs.");
   }
 
   const user = await prisma.user.findFirst({
     where: {
-      email: parsedData.data.username,
-      password: parsedData.data.password,
+      email: parsedData.data.email,
     },
   });
 
-  // TODO: check the password separately after fetching the user details from the db
   if (!user) {
-    throw new ApiError(403, "Incorrect Credentials");
+    throw new ApiError(403, "Incorrect Credentials!");
   }
 
-  // TODO: Sign the JWT
-  const token = jwt.sign(
-    {
-      id: user.id,
-    },
-    process.env.JWT_PASSWORD as string,
+  const isPasswordValid = await isPasswordCorrect(
+    parsedData.data.password,
+    user.password,
   );
+  if (!isPasswordValid) {
+    throw new ApiError(403, "Incorrect Credentials!");
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    user.id,
+  );
+
+  // console.log("Refresh Token = ", refreshToken);
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
 
   return res
     .status(200)
-    .json(
-      new ApiResponse(200, { token: token }, "User logged in successfully"),
-    );
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(new ApiResponse(200, {}, "User logged in successfully"));
 });
 
-const fetchUser = asyncHandler(async (req: Request, res: Response) => {
+const getCurrentUser = asyncHandler(async (req: Request, res: Response) => {
   // Fix the type
   // @ts-ignore
   const id = req.id;
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findFirst({
     where: {
       id: id,
     },
@@ -117,4 +133,89 @@ const fetchUser = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-export { signupUser, signinUser, fetchUser };
+// Generate both access and refresh token and save refresh token in db
+const generateAccessAndRefreshToken = async (userId: number) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        refreshToken: refreshToken,
+      },
+    });
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(500, "Failed to create access and refresh tokens");
+  }
+};
+
+const refreshAccessToken = asyncHandler(async (req: Request, res: Response) => {
+  const incomingRefreshToken =
+    req.cookies.refreshToken || req.body.refreshToken;
+
+  if (!incomingRefreshToken) {
+    throw new ApiError(401, "Unauthorized Request!");
+  }
+
+  const decodedToken = jwt.verify(
+    incomingRefreshToken,
+    process.env.REFRESH_TOKEN_SECRET as string,
+  ) as JwtPayload;
+
+  const user = await prisma.user.findFirst({
+    where: {
+      id: decodedToken.id,
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(404, "Invalid Refresh Token");
+  }
+
+  if (incomingRefreshToken !== user.refreshToken) {
+    throw new ApiError(401, "Refresh Token is expired Please sign in again");
+  }
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    user.id,
+  );
+
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "Access and Refresh Tokens have been refreshed!",
+      ),
+    );
+});
+
+export { signupUser, signinUser, getCurrentUser, refreshAccessToken };

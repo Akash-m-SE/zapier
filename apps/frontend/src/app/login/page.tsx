@@ -16,9 +16,12 @@ const Login = () => {
 
   const clickHandler = async () => {
     const res = await axios.post(`${BACKEND_URL}/api/v1/user/signin`, {
-      username: email,
+      email,
       password,
     });
+
+    console.log("Response from backend = ", res);
+
     const token = res.data.data.token;
     localStorage.setItem("token", token);
     router.push("/dashboard");

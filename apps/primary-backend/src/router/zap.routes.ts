@@ -9,13 +9,8 @@ import {
 
 const router = Router();
 
-// Create a fresh zap
-router.post("/", authMiddleware, createNewZap);
-
-// List all the zaps
-router.get("/", authMiddleware, listAllZaps);
-
-// Get Individual Zap
-router.get("/:zapId", authMiddleware, getSingleZap);
+router.post("/", authMiddleware, createNewZap); // Create a fresh zap
+router.get("/", authMiddleware, listAllZaps); // List all the zaps
+router.get("/:zapId", authMiddleware, getSingleZap); // Get Individual Zap
 
 export const zapRouter = router;
