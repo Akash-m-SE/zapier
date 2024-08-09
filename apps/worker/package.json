@@ -6,11 +6,12 @@
   "type": "commonjs",
   "scripts": {
     "build": "esbuild src/index.ts --platform=node --bundle --outdir=dist",
-    "dev": "npm run build && node dist/index.js"
+    "dev": "nodemon"
   },
   "dependencies": {
     "@repo/db": "*",
-    "kafkajs": "^2.2.4"
+    "kafkajs": "^2.2.4",
+    "nodemon": "^3.1.4"
   },
   "keywords": [],
   "author": "",

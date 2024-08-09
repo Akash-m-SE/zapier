@@ -19,7 +19,8 @@ const Login = () => {
       username: email,
       password,
     });
-    localStorage.setItem("token", res.data.token);
+    const token = res.data.data.token;
+    localStorage.setItem("token", token);
     router.push("/dashboard");
   };
 
@@ -31,7 +32,6 @@ const Login = () => {
           id="login-container"
         >
           <div
-            // className="flex flex-col pt-20 px-4 w-[10vw] sm:w-[30vw] gap-3"
             className="flex flex-col pt-20 px-4 w-auto sm:w-[40vw] md:w-[40vw] lg:w-[30vw] gap-3"
             id="login-left-content"
           >

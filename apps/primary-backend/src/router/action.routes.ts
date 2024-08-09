@@ -1,14 +1,8 @@
 import { Router } from "express";
-import prisma from "../lib/prisma";
+import { fetchAvailableActions } from "../controllers/action.controller";
 
 const router = Router();
 
-router.get("/available", async (req, res) => {
-  const availableActions = await prisma.availableAction.findMany({});
-
-  res.json({
-    availableActions,
-  });
-});
+router.get("/available", fetchAvailableActions);
 
 export const actionRouter = router;
