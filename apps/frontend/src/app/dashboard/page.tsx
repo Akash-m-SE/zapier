@@ -39,17 +39,21 @@ const useZaps = () => {
   const [loading, setLoading] = useState(true);
   const [zaps, setZaps] = useState<Zap[]>([]);
 
-  useEffect(() => {
-    axios
-      .get(`${BACKEND_URL}/api/v1/zap`, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      })
-      .then((res) => {
-        setZaps(res.data.zaps);
-        setLoading(false);
+  const fetchZaps = async () => {
+    try {
+      const res = await axios.get(`${BACKEND_URL}/api/v1/zap`, {
+        withCredentials: true,
       });
+
+      setZaps(res.data.zaps);
+      setLoading(false);
+    } catch (error) {
+      console.log("Error while fetching zaps = ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchZaps();
   }, []);
 
   return {

@@ -7,7 +7,7 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3002;
 
 app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
   const userId = req.params.userId;

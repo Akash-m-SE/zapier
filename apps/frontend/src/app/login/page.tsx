@@ -15,15 +15,17 @@ const Login = () => {
   const router = useRouter();
 
   const clickHandler = async () => {
-    const res = await axios.post(`${BACKEND_URL}/api/v1/user/signin`, {
-      email,
-      password,
-    });
+    const res = await axios.post(
+      `${BACKEND_URL}/api/v1/user/signin`,
+      {
+        email,
+        password,
+      },
+      {
+        withCredentials: true,
+      },
+    );
 
-    console.log("Response from backend = ", res);
-
-    const token = res.data.data.token;
-    localStorage.setItem("token", token);
     router.push("/dashboard");
   };
 

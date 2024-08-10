@@ -20,8 +20,6 @@ export const authMiddleware = asyncHandler(
       process.env.ACCESS_TOKEN_SECRET as string,
     ) as JwtPayload;
 
-    // console.log("decoded token = ", decodedToken);
-
     const user = await prisma.user.findFirst({
       where: {
         id: decodedToken.id,
@@ -31,6 +29,10 @@ export const authMiddleware = asyncHandler(
     if (!user) {
       throw new ApiError(401, "Invalid Access Token!");
     }
+
+    // Attaching a new id field to the request object
+    // @ts-ignore
+    req.id = decodedToken.id;
 
     next();
   },

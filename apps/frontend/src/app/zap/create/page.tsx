@@ -67,9 +67,7 @@ const CreateNewZap = () => {
         })),
       },
       {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
+        withCredentials: true,
       },
     );
 
