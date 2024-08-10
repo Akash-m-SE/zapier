@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma";
-import { SigninSchema, SignupSchema } from "../types";
+import { SigninSchema, SignupSchema } from "../../types/zodSchemas";
 import { Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { asyncHandler } from "../utils/asyncHandler";
@@ -30,7 +30,6 @@ const signupUser = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(403, "User already exists!");
   }
 
-  // TODO: encrypt the passwords before storing them in db
   const hashedPassword = await hashPassword(parsedData.data.password);
 
   const user = await prisma.user.create({
@@ -110,9 +109,30 @@ const signinUser = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(200, {}, "User logged in successfully"));
 });
 
+const signoutUser = asyncHandler(async (req: Request, res: Response) => {
+  await prisma.user.update({
+    where: {
+      id: req.id,
+    },
+    data: {
+      refreshToken: "",
+    },
+  });
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User Logget Out Successfully"));
+});
+
+// Fetch the currently logged in user
 const getCurrentUser = asyncHandler(async (req: Request, res: Response) => {
-  // Fix the type
-  // @ts-ignore
   const id = req.id;
   const user = await prisma.user.findFirst({
     where: {
@@ -218,4 +238,10 @@ const refreshAccessToken = asyncHandler(async (req: Request, res: Response) => {
     );
 });
 
-export { signupUser, signinUser, getCurrentUser, refreshAccessToken };
+export {
+  signupUser,
+  signinUser,
+  signoutUser,
+  getCurrentUser,
+  refreshAccessToken,
+};

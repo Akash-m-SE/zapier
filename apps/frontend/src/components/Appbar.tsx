@@ -17,6 +17,7 @@ const Appbar = () => {
           height={100}
           width={100}
           alt="logo"
+          style={{ width: "auto", height: "auto" }}
           onClick={() => {
             router.push("/");
           }}

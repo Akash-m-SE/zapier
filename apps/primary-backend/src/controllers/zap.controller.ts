@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
 import prisma from "../lib/prisma";
-import { ZapCreateSchema } from "../types";
+import { ZapCreateSchema } from "../../types/zodSchemas";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
 
 // Create New Zap
 const createNewZap = asyncHandler(async (req: Request, res: Response) => {
-  //@ts-ignore
   const id = req.id;
   const body = req.body;
   const parsedData = ZapCreateSchema.safeParse(body);
@@ -60,7 +59,6 @@ const createNewZap = asyncHandler(async (req: Request, res: Response) => {
 
 // List All the Zaps
 const listAllZaps = asyncHandler(async (req: Request, res: Response) => {
-  // @ts-ignore
   const id = req.id;
   const zaps = await prisma.zap.findMany({
     where: {
@@ -90,7 +88,6 @@ const listAllZaps = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const getSingleZap = asyncHandler(async (req: Request, res: Response) => {
-  //@ts-ignore
   const id = req.id;
   const zapId = req.params.zapId;
 

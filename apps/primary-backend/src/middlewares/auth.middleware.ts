@@ -31,7 +31,6 @@ export const authMiddleware = asyncHandler(
     }
 
     // Attaching a new id field to the request object
-    // @ts-ignore
     req.id = decodedToken.id;
 
     next();
