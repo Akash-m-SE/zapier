@@ -2,11 +2,15 @@
   "name": "@repo/db",
   "version": "0.0.0",
   "dependencies": {
-    "@prisma/client": "latest"
+    "@prisma/client": "latest",
+    "ts-node": "^10.9.2"
   },
   "scripts": {
     "db:generate": "prisma generate",
     "db:push": "prisma db push --skip-generate"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
     "prisma": "latest"

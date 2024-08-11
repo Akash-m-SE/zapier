@@ -226,7 +226,7 @@ const Modal = ({
               />
             )}
 
-            {step === 1 && selectedAction?.id === "solana" && (
+            {step === 1 && selectedAction?.id === "send-sol" && (
               <SolanaSelector
                 setMetadata={(metadata) => {
                   onSelect({
