@@ -16,7 +16,7 @@ const connection = new Connection(
 
 export async function sendSol(to: string, amount: string) {
   const keypair = Keypair.fromSecretKey(
-    base58.decode(process.env.SOL_PRIVATE_KEY ?? ""),
+    base58.decode((process.env.SOL_PRIVATE_KEY as string) || ""),
   );
   console.log(keypair.publicKey);
   const transferTransaction = new Transaction().add(
