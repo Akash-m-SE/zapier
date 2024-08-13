@@ -10,7 +10,12 @@
   },
   "dependencies": {
     "@repo/db": "*",
+    "@types/node": "^22.2.0",
+    "@types/nodemailer": "^6.4.15",
+    "dotenv": "^16.4.5",
+    "googleapis": "^140.0.1",
     "kafkajs": "^2.2.4",
+    "nodemailer": "^6.9.14",
     "nodemon": "^3.1.4"
   },
   "keywords": [],

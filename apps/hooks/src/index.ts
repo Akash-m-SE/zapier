@@ -12,7 +12,6 @@ const PORT = process.env.PORT || 3002;
 app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
   const userId = req.params.userId;
   const zapId = req.params.zapId;
-
   const body = req.body;
 
   try {
