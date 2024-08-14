@@ -95,8 +95,6 @@ const signinUser = asyncHandler(async (req: Request, res: Response) => {
     user.id,
   );
 
-  // console.log("Refresh Token = ", refreshToken);
-
   const options = {
     httpOnly: true,
     secure: true,
@@ -104,9 +102,14 @@ const signinUser = asyncHandler(async (req: Request, res: Response) => {
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-    .json(new ApiResponse(200, {}, "User logged in successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        { accessToken: accessToken },
+        "User logged in successfully",
+      ),
+    );
 });
 
 const signoutUser = asyncHandler(async (req: Request, res: Response) => {
@@ -126,9 +129,8 @@ const signoutUser = asyncHandler(async (req: Request, res: Response) => {
 
   return res
     .status(200)
-    .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User Logget Out Successfully"));
+    .json(new ApiResponse(200, {}, "User Logged Out Successfully"));
 });
 
 // Fetch the currently logged in user

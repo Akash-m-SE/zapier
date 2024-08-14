@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { CheckFeature } from "@/components/CheckFeature";
 import { Input } from "@/components/Input";
-import { BACKEND_URL } from "../config";
+import axiosInstance from "@/utils/axiosInstance";
 
 const Signup = () => {
   const router = useRouter();
@@ -67,14 +67,12 @@ const Signup = () => {
             <div className="pt-4">
               <PrimaryButton
                 onClick={async () => {
-                  const res = await axios.post(
-                    `${BACKEND_URL}/api/v1/user/signup`,
-                    {
-                      email,
-                      password,
-                      name,
-                    },
-                  );
+                  const res = await axiosInstance.post(`/api/v1/user/signup`, {
+                    email,
+                    password,
+                    name,
+                  });
+
                   router.push("/login");
                 }}
                 size="big"

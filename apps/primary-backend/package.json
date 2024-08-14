@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@repo/db": "*",
+    "@repo/http-status": "*",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",

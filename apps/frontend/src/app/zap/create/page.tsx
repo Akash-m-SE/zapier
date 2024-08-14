@@ -4,6 +4,8 @@ import { BACKEND_URL } from "@/app/config";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { Input } from "@/components/Input";
 import { ZapCell } from "@/components/ZapCell";
+import useStore from "@/store";
+import axiosInstance from "@/utils/axiosInstance";
 
 import axios from "axios";
 import Image from "next/image";
@@ -32,6 +34,7 @@ const useAvailableActionsAndTriggers = () => {
 
 const CreateNewZap = () => {
   const router = useRouter();
+
   const { availableActions, availableTriggers } =
     useAvailableActionsAndTriggers();
   const [selectedTrigger, setSelectedTrigger] = useState<{
@@ -56,20 +59,14 @@ const CreateNewZap = () => {
       return;
     }
 
-    const response = await axios.post(
-      `${BACKEND_URL}/api/v1/zap`,
-      {
-        availableTriggerId: selectedTrigger.id,
-        triggerMetadata: {},
-        actions: selectedActions.map((a) => ({
-          availableActionId: a.availableActionId,
-          actionMetadata: a.metadata,
-        })),
-      },
-      {
-        withCredentials: true,
-      },
-    );
+    const response = await axiosInstance.post(`/api/v1/zap`, {
+      availableTriggerId: selectedTrigger.id,
+      triggerMetadata: {},
+      actions: selectedActions.map((a) => ({
+        availableActionId: a.availableActionId,
+        actionMetadata: a.metadata,
+      })),
+    });
 
     router.push("/dashboard");
   };

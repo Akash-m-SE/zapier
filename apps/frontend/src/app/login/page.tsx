@@ -8,25 +8,29 @@ import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { Input } from "@/components/Input";
 import LinkButton from "@/components/buttons/LinkButton";
 import { BACKEND_URL } from "../config";
+import useStore from "@/store";
+import axiosInstance from "@/utils/axiosInstance";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
+  const updateAccessToken = useStore((state) => state.updateAccessToken);
+
   const clickHandler = async () => {
-    const res = await axios.post(
-      `${BACKEND_URL}/api/v1/user/signin`,
-      {
+    try {
+      const res = await axiosInstance.post(`/api/v1/user/signin`, {
         email,
         password,
-      },
-      {
-        withCredentials: true,
-      },
-    );
+      });
 
-    router.push("/dashboard");
+      updateAccessToken(res.data.data.accessToken);
+
+      router.push("/dashboard");
+    } catch (error) {
+      console.log("Error while signing in = ", error);
+    }
   };
 
   return (

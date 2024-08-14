@@ -1,12 +1,12 @@
 "use client";
 
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { BACKEND_URL, HOOKS_URL } from "../config";
+import { HOOKS_URL } from "../config";
 import { useRouter } from "next/navigation";
 import DarkButton from "@/components/buttons/DarkButton";
 import LinkButton from "@/components/buttons/LinkButton";
 import Image from "next/image";
+import axiosInstance from "@/utils/axiosInstance";
 
 interface Zap {
   id: string;
@@ -41,20 +41,19 @@ const useZaps = () => {
 
   const fetchZaps = async () => {
     try {
-      const res = await axios.get(`${BACKEND_URL}/api/v1/zap`, {
-        withCredentials: true,
-      });
+      const res = await axiosInstance.get(`/api/v1/zap`);
 
       setZaps(res.data.zaps);
-      setLoading(false);
     } catch (error) {
       console.log("Error while fetching zaps = ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchZaps();
-  }, []);
+  }, [setZaps]);
 
   return {
     loading,
