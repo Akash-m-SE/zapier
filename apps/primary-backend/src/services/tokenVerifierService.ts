@@ -13,11 +13,15 @@ export enum tokenType {
 
 export const tokenVerifier = (token: string, type: tokenType) => {
   try {
-    return jwt.verify(
-      token,
-      process.env.ACCESS_TOKEN_SECRET as string,
-    ) as JwtPayload;
+    const secret =
+      type === tokenType.AccessToken
+        ? (process.env.ACCESS_TOKEN_SECRET as string)
+        : (process.env.REFRESH_TOKEN_SECRET as string);
+
+    return jwt.verify(token, secret) as JwtPayload;
   } catch (error) {
+    console.log("Error while verifying token = ", error);
+
     if (error instanceof TokenExpiredError) {
       if (type === tokenType.AccessToken) {
         throw new ApiError(

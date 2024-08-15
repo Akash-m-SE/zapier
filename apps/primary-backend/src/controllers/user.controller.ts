@@ -10,6 +10,8 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../services/tokenService";
+import { tokenType, tokenVerifier } from "../services/tokenVerifierService";
+import { HTTP_STATUS_CODES, HTTP_STATUS_MESSAGES } from "@repo/http-status";
 
 const signupUser = asyncHandler(async (req: Request, res: Response) => {
   const body = req.body;
@@ -191,18 +193,28 @@ const generateAccessAndRefreshToken = async (userId: number) => {
   }
 };
 
+// Refreshing the access token after validating the refresh token
 const refreshAccessToken = asyncHandler(async (req: Request, res: Response) => {
-  const incomingRefreshToken =
-    req.cookies.refreshToken || req.body.refreshToken;
+  const incomingRefreshToken = req.cookies.refreshToken;
 
   if (!incomingRefreshToken) {
-    throw new ApiError(401, "Unauthorized Request!");
+    throw new ApiError(
+      HTTP_STATUS_CODES.REFRESH_TOKEN_NOT_FOUND,
+      HTTP_STATUS_MESSAGES.REFRESH_TOKEN_NOT_FOUND,
+    );
   }
 
-  const decodedToken = jwt.verify(
+  const decodedToken = tokenVerifier(
     incomingRefreshToken,
-    process.env.REFRESH_TOKEN_SECRET as string,
-  ) as JwtPayload;
+    tokenType.RefreshToken,
+  );
+
+  if (!decodedToken) {
+    throw new ApiError(
+      HTTP_STATUS_CODES.INVALID_REFRESH_TOKEN,
+      HTTP_STATUS_MESSAGES.INVALID_REFRESH_TOKEN,
+    );
+  }
 
   const user = await prisma.user.findFirst({
     where: {
@@ -211,31 +223,21 @@ const refreshAccessToken = asyncHandler(async (req: Request, res: Response) => {
   });
 
   if (!user) {
-    throw new ApiError(404, "Invalid Refresh Token");
+    throw new ApiError(
+      HTTP_STATUS_CODES.INVALID_REFRESH_TOKEN,
+      HTTP_STATUS_MESSAGES.INVALID_REFRESH_TOKEN,
+    );
   }
 
-  if (incomingRefreshToken !== user.refreshToken) {
-    throw new ApiError(401, "Refresh Token is expired Please sign in again");
-  }
-
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-
-  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-    user.id,
-  );
+  const { accessToken } = await generateAccessAndRefreshToken(user.id);
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
     .json(
       new ApiResponse(
         200,
-        {},
-        "Access and Refresh Tokens have been refreshed!",
+        { accessToken: accessToken },
+        "New Access Token has been generated successfully",
       ),
     );
 });

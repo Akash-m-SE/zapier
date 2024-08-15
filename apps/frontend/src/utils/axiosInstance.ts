@@ -1,6 +1,8 @@
 import { BACKEND_URL } from "@/app/config";
 import useStore from "@/store";
+import { HTTP_STATUS_CODES, HTTP_STATUS_MESSAGES } from "@repo/http-status";
 import axios from "axios";
+import refreshAccessToken from "./refreshAccessToken";
 
 const axiosInstance = axios.create({
   baseURL: BACKEND_URL,
@@ -17,7 +19,6 @@ axiosInstance.interceptors.request.use(
   },
   (error) => {
     console.log("Error in request ", error);
-
     return Promise.reject(error);
   },
 );
@@ -26,13 +27,35 @@ axiosInstance.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
+  async (error) => {
     console.log("Error in response ", error);
 
-    // Handling unauthorized errors
-    if (error.response.status === 405) {
-      console.log("Error from the axios interceptors");
-      // Handle the error
+    const originalRequest = error.config;
+
+    if (
+      error.response.data.statusCode ===
+        HTTP_STATUS_CODES.EXPIRED_ACCESS_TOKEN &&
+      error.response.data.message ===
+        HTTP_STATUS_MESSAGES.EXPIRED_ACCESS_TOKEN &&
+      !originalRequest._retry
+    ) {
+      console.log("Your Access Token expired");
+      //Handle refreshing the refresh token logic and resending the request
+      originalRequest._retry = true;
+
+      try {
+        const newAccessToken = await refreshAccessToken();
+
+        useStore.getState().updateAccessToken(newAccessToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        console.log("Failed to refresh the access token");
+
+        return Promise.reject(refreshError);
+      }
     }
 
     return Promise.reject(error);
