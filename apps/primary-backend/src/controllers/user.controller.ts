@@ -1,7 +1,6 @@
 import prisma from "../lib/prisma";
 import { SigninSchema, SignupSchema } from "../../types/zodSchemas";
 import { Request, Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
 import { ApiResponse } from "../utils/ApiResponse";

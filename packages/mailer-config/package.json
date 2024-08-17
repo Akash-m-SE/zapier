@@ -1,0 +1,26 @@
+{
+  "name": "@repo/mailer-config",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@types/node": "^22.4.0",
+    "@types/nodemailer": "^6.4.15",
+    "dotenv": "^16.4.5",
+    "googleapis": "^142.0.0",
+    "nodemailer": "^6.9.14",
+    "undici-types": "^6.18.2"
+  },
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

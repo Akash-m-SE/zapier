@@ -1,7 +1,7 @@
 import { JsonObject } from "@prisma/client/runtime/library";
 import { Kafka } from "kafkajs";
 import { parse } from "./parser";
-import { sendEmail } from "./email";
+import { sendEmail } from "@repo/mailer-config";
 // import { sendSol } from "./solana";
 import prisma from "./lib/prisma";
 import dotenv from "dotenv";
@@ -59,7 +59,7 @@ async function main() {
         },
       });
       const currentAction = zapRunDetails?.zap.actions.find(
-        (x) => x.sortingOrder === stage,
+        (x: any) => x.sortingOrder === stage,
       );
 
       if (!currentAction) {

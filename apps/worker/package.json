@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@repo/db": "*",
+    "@repo/mailer-config": "*",
     "@solana/web3.js": "^1.95.2",
     "@types/node": "^22.2.0",
     "@types/nodemailer": "^6.4.15",

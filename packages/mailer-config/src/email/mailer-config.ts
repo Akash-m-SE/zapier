@@ -4,8 +4,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// SOL_PRIVATE_KEY=""
-
 const OAuth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID as string,
   process.env.GOOGLE_CLIENT_SECRET as string,

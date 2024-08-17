@@ -83,9 +83,9 @@ model AvailableAction {
 model ZapRun {
   id       String @id @default(uuid())
   zapId    String
-  metadata Json
-
   zap          Zap           @relation(fields: [zapId], references: [id])
+  
+  metadata Json
   zapRunOutBox ZapRunOutbox?
 
   createdAt DateTime @default(now())
