@@ -1,13 +1,11 @@
 "use client";
 
-import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { Input } from "@/components/Input";
 import LinkButton from "@/components/buttons/LinkButton";
-import { BACKEND_URL } from "../config";
 import useStore from "@/store";
 import axiosInstance from "@/utils/axiosInstance";
 

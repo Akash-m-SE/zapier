@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 interface TokenPayLoad {
-  id: number;
+  id: string;
   name?: string;
   email?: string;
 }

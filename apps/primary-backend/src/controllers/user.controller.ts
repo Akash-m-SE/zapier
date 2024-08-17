@@ -52,9 +52,10 @@ const signupUser = asyncHandler(async (req: Request, res: Response) => {
   }
 
   // TODO: sends out email to the user to verify
-  // await send Email
+  // await sendEmail()
 
   return res
+
     .status(200)
     .json(
       new ApiResponse(
@@ -157,7 +158,7 @@ const getCurrentUser = asyncHandler(async (req: Request, res: Response) => {
 });
 
 // Generate both access and refresh token and save refresh token in db
-const generateAccessAndRefreshToken = async (userId: number) => {
+const generateAccessAndRefreshToken = async (userId: string) => {
   try {
     const user = await prisma.user.findUnique({
       where: {

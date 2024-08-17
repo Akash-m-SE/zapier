@@ -15,6 +15,16 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const signupHandler = async () => {
+    const res = await axiosInstance.post(`/api/v1/user/signup`, {
+      email,
+      password,
+      name,
+    });
+
+    router.push("/login");
+  };
+
   return (
     <div>
       <div className="flex justify-center p-10">
@@ -66,15 +76,7 @@ const Signup = () => {
 
             <div className="pt-4">
               <PrimaryButton
-                onClick={async () => {
-                  const res = await axiosInstance.post(`/api/v1/user/signup`, {
-                    email,
-                    password,
-                    name,
-                  });
-
-                  router.push("/login");
-                }}
+                onClick={() => signupHandler()}
                 size="big"
                 className="h-10 rounded-lg"
               >

@@ -14,12 +14,14 @@ datasource db {
 }
 
 model User {
-  id           Int    @id @default(autoincrement())
+  id           String  @id @default(uuid())
   name         String
   email        String
   password     String
   zaps         Zap[]
-  refreshToken String @default("")
+  otp          Int?
+  verify       Boolean @default(false)
+  refreshToken String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -28,8 +30,8 @@ model User {
 model Zap {
   id String @id @default(uuid())
 
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
   triggerId String
   trigger   Trigger?
@@ -81,11 +83,11 @@ model AvailableAction {
 }
 
 model ZapRun {
-  id       String @id @default(uuid())
-  zapId    String
-  zap          Zap           @relation(fields: [zapId], references: [id])
-  
-  metadata Json
+  id    String @id @default(uuid())
+  zapId String
+  zap   Zap    @relation(fields: [zapId], references: [id])
+
+  metadata     Json          @default("{}")
   zapRunOutBox ZapRunOutbox?
 
   createdAt DateTime @default(now())
