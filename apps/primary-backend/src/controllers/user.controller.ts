@@ -11,6 +11,8 @@ import {
 } from "../services/tokenService";
 import { tokenType, tokenVerifier } from "../services/tokenVerifierService";
 import { HTTP_STATUS_CODES, HTTP_STATUS_MESSAGES } from "@repo/http-status";
+import { otpCreate } from "../services/otpService";
+import { sendEmail } from "@repo/mailer-config";
 
 const signupUser = asyncHandler(async (req: Request, res: Response) => {
   const body = req.body;
@@ -33,37 +35,29 @@ const signupUser = asyncHandler(async (req: Request, res: Response) => {
 
   const hashedPassword = await hashPassword(parsedData.data.password);
 
+  const otp = otpCreate();
+
   const user = await prisma.user.create({
     data: {
       email: parsedData.data.email,
       password: hashedPassword,
       name: parsedData.data.name,
-    },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      password: false,
+      otp: otp,
     },
   });
 
   if (!user) {
-    throw new ApiError(500, "User creation failed");
+    throw new ApiError(500, "Account creation failed");
   }
 
   // TODO: sends out email to the user to verify
-  // await sendEmail()
+
+  const emailBody = otp.toString();
+  await sendEmail(user.email, emailBody); // sends out the otp to user email after successful account creation
 
   return res
-
     .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        user,
-        "User created successfully. Please verify your account by checking your email",
-      ),
-    );
+    .json(new ApiResponse(200, {}, "Account created successfully."));
 });
 
 const signinUser = asyncHandler(async (req: Request, res: Response) => {
@@ -108,7 +102,7 @@ const signinUser = asyncHandler(async (req: Request, res: Response) => {
     .json(
       new ApiResponse(
         200,
-        { accessToken: accessToken },
+        { userId: user.id, accessToken: accessToken, verify: user.verify },
         "User logged in successfully",
       ),
     );
@@ -231,15 +225,83 @@ const refreshAccessToken = asyncHandler(async (req: Request, res: Response) => {
 
   const { accessToken } = await generateAccessAndRefreshToken(user.id);
 
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        userId: user.id,
+        accessToken: accessToken,
+      },
+      "New Access Token has been generated successfully",
+    ),
+  );
+});
+
+const generateOtp = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.id;
+
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const otp = otpCreate();
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      otp: otp,
+    },
+  });
+
+  const body = otp.toString();
+  await sendEmail(user.email, body);
+
   return res
     .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        { accessToken: accessToken },
-        "New Access Token has been generated successfully",
-      ),
-    );
+    .json(new ApiResponse(200, {}, "OTP generated successfully"));
+});
+
+const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.id; // or const userId = req.id // from authMiddleware
+  const { otp } = req.body;
+
+  if (!userId || !otp) {
+    throw new ApiError(404, "All fields are required");
+  }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  if (otp !== user.otp) {
+    throw new ApiError(400, "Invalid OTP");
+  }
+
+  const response = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      verify: true,
+    },
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Email verified successfully"));
 });
 
 export {
@@ -248,4 +310,6 @@ export {
   signoutUser,
   getCurrentUser,
   refreshAccessToken,
+  generateOtp,
+  verifyEmail,
 };

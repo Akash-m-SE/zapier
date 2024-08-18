@@ -29,7 +29,7 @@ export const authMiddleware = asyncHandler(
     });
 
     if (!user) {
-      throw new ApiError(401, "Invalid Access accessToken!");
+      throw new ApiError(401, "Invalid Access Token!");
     }
 
     // Attaching a new id field to the request object

@@ -2,20 +2,22 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 interface StoreState {
+  userId: string;
   accessToken: string;
-  updateAccessToken: (token: string) => void;
-  deleteAccessToken: () => void;
+  updateUserDetails: (userId: string, accessToken: string) => void;
+  deleteUserDetails: () => void;
 }
 
 const useStore = create<StoreState>()(
   persist(
     (set) => ({
+      userId: "",
       accessToken: "",
-      updateAccessToken: (token: string) => set({ accessToken: token }),
-      deleteAccessToken: () => set({ accessToken: "" }),
+      updateUserDetails: (userId, accessToken) => set({ userId, accessToken }),
+      deleteUserDetails: () => set({ userId: "", accessToken: "" }),
     }),
     {
-      name: "access-token",
+      name: "userData",
       storage: createJSONStorage(() => localStorage),
     },
   ),

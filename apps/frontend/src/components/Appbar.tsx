@@ -11,13 +11,17 @@ import axiosInstance from "@/utils/axiosInstance";
 const Appbar = () => {
   const router = useRouter();
 
-  const deleteAccessToken = useStore((state) => state.deleteAccessToken);
+  const deleteUserDetails = useStore((state) => state.deleteUserDetails);
 
   const logoutHandler = async () => {
-    const response = await axiosInstance.post(`/api/v1/user/signout`);
+    try {
+      await axiosInstance.post(`/api/v1/user/signout`);
+      deleteUserDetails(); //deleting the access token and userId from the store
 
-    // deleteAccessToken(); //deleting the access token from the store
-    router.push("/login");
+      router.push("/login");
+    } catch (error) {
+      console.log("Error while logging out = ", error);
+    }
   };
 
   return (

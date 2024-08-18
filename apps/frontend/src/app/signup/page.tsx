@@ -1,6 +1,5 @@
 "use client";
 
-import axios from "axios";
 import { useState } from "react";
 
 import { useRouter } from "next/navigation";
@@ -16,13 +15,17 @@ const Signup = () => {
   const [password, setPassword] = useState("");
 
   const signupHandler = async () => {
-    const res = await axiosInstance.post(`/api/v1/user/signup`, {
-      email,
-      password,
-      name,
-    });
+    try {
+      const res = await axiosInstance.post(`/api/v1/user/signup`, {
+        email,
+        password,
+        name,
+      });
 
-    router.push("/login");
+      router.push("/login");
+    } catch (error) {
+      console.log("Error while creating the user = ", error);
+    }
   };
 
   return (

@@ -14,7 +14,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const updateAccessToken = useStore((state) => state.updateAccessToken);
+  const updateUserDetails = useStore((state) => state.updateUserDetails);
 
   const clickHandler = async () => {
     try {
@@ -22,10 +22,15 @@ const Login = () => {
         email,
         password,
       });
+      const userId = res.data.data.userId;
+      const accessToken = res.data.data.accessToken;
+      updateUserDetails(userId, accessToken);
 
-      updateAccessToken(res.data.data.accessToken);
-
-      router.push("/dashboard");
+      if (res.data.data.verify === false) {
+        router.push(`/verify/${userId}`);
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error) {
       console.log("Error while signing in = ", error);
     }
