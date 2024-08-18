@@ -276,6 +276,10 @@ const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(404, "All fields are required");
   }
 
+  if (!otp || typeof otp !== "number") {
+    throw new ApiError(404, "Invalid Credentials");
+  }
+
   const user = await prisma.user.findFirst({
     where: {
       id: userId,
