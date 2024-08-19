@@ -452,7 +452,9 @@ const resetForgotPassword = asyncHandler(
 
     return res
       .status(200)
-      .json(new ApiResponse(200, {}, "Password reset successfully"));
+      .json(
+        new ApiResponse(200, {}, "Your password has been reset successfully"),
+      );
   },
 );
 

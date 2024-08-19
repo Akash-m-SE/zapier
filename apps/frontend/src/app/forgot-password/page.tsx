@@ -33,7 +33,7 @@ import {
 const ForgotPassword = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
-  const [emailVerified, setEmailVerified] = useState<boolean>(true);
+  const [emailVerified, setEmailVerified] = useState<boolean>(false);
   const router = useRouter();
 
   const emailForm = useForm<z.infer<typeof emailFormSchema>>({
@@ -60,42 +60,25 @@ const ForgotPassword = () => {
 
   const onSubmitEmailForm = async (values: z.infer<typeof emailFormSchema>) => {
     try {
-      setEmail(values.email);
-      // TODO:- send a post axios request to generate otp for resetting password
-      // const res = await axiosInstance.post()
-      // toast({
-      //   description: res.data.message,
-      //   className: "bg-green-400 font-semibold",
-      // });
-      console.log("values = ", values.email);
-    } catch (error) {
-      console.log("Error while sending the otp = ", error);
-    }
-  };
-
-  const onSubmitOtpForm = async (data: z.infer<typeof otpFormSchema>) => {
-    try {
       setLoading(true);
-      // const res = await axiosInstance.post(`/api/v1/user/verify/${userId}`, {
-      // email: //get from usestate
-      //   otp: otp,
-      // });
+      setEmail(values.email);
 
-      // toast({
-      //   description: res.data.message,
-      //   className: "bg-green-400 font-semibold",
-      // });
-
-      otpForm.reset();
-
-      // Todo:- after verification redirect to login page
-      // router.push("/dashboard");
-    } catch (error) {
-      console.log("Error while verifying the user = ", error);
+      const res = await axiosInstance.post(
+        "/api/v1/user/forgot-password-generate-otp",
+        {
+          email: values.email,
+        },
+      );
+      toast({
+        description: res.data.message,
+        className: "bg-green-400 font-semibold",
+      });
+    } catch (error: any) {
+      console.log("Error while sending the otp = ", error);
       toast({
         variant: "destructive",
-        title: "Something went wrong.",
-        description: "Otp does not match!",
+        title: "Uh oh! Something went wrong.",
+        description: error.response.data.message,
         action: <ToastAction altText="Try again">Try again</ToastAction>,
       });
     } finally {
@@ -103,19 +86,34 @@ const ForgotPassword = () => {
     }
   };
 
-  const onSubmitPasswordForm = async (
-    data: z.infer<typeof passwordFormSchema>,
-  ) => {
+  const onSubmitOtpForm = async (values: z.infer<typeof otpFormSchema>) => {
     try {
-      // Todo: reset the password
-    } catch (error) {
-      console.log("Error while verifying the password = ", error);
+      setLoading(true);
+      const res = await axiosInstance.post(
+        "/api/v1/user/forgot-password-validate-otp",
+        {
+          email: email,
+          otp: values.otp,
+        },
+      );
+
+      toast({
+        description: res.data.message,
+        className: "bg-green-400 font-semibold",
+      });
+
+      otpForm.reset();
+      setEmailVerified(true);
+    } catch (error: any) {
+      console.log("Error while verifying the user = ", error);
       toast({
         variant: "destructive",
         title: "Something went wrong.",
-        description: "Failed to update Password!",
+        description: error.response.data.message,
         action: <ToastAction altText="Try again">Try again</ToastAction>,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -124,14 +122,60 @@ const ForgotPassword = () => {
       setLoading(true);
       otpForm.reset();
       // TODO: make and regenerate otp for resetting the password
-      // const res = await axiosInstance.post(`api/v1/user/re-generate-otp`);
+      const res = await axiosInstance.post(
+        `api/v1/user/forgot-password-generate-otp`,
+        {
+          email: email,
+        },
+      );
 
-      // toast({
-      //   description: res.data.message,
-      //   className: "bg-blue-400 font-semibold",
-      // });
-    } catch (error) {
+      toast({
+        description: res.data.message,
+        className: "bg-blue-400 font-semibold",
+      });
+    } catch (error: any) {
       console.log("Error while resending the otp = ", error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.response.data.message,
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSubmitPasswordForm = async (
+    values: z.infer<typeof passwordFormSchema>,
+  ) => {
+    try {
+      setLoading(true);
+      const res = await axiosInstance.post(
+        "/api/v1/user/forgot-password-reset-password",
+        {
+          email: email,
+          password: values.password,
+          confirmPassword: values.confirmPassword,
+        },
+      );
+
+      passwordForm.reset();
+      setEmailVerified(false);
+      toast({
+        description: res.data.message,
+        className: "bg-blue-400 font-semibold",
+      });
+
+      router.push("/login");
+    } catch (error: any) {
+      console.log("Error while verifying the password = ", error);
+      toast({
+        variant: "destructive",
+        title: "Something went wrong.",
+        description: error.response.data.message,
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
     } finally {
       setLoading(false);
     }
@@ -139,7 +183,6 @@ const ForgotPassword = () => {
 
   return (
     <>
-      {email}
       <div
         className={`${emailVerified ? "hidden" : "flex"} flex-col items-center justify-center p-2 h-auto xl:h-[80vh] w-auto`}
         id="email-otp-form"
@@ -169,7 +212,7 @@ const ForgotPassword = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="mt-3">
+            <Button type="submit" className="mt-3" disabled={loading}>
               Submit
             </Button>
           </form>
@@ -272,7 +315,9 @@ const ForgotPassword = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={loading}>
+              Submit
+            </Button>
           </form>
         </Form>
       </div>
