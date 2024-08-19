@@ -6,7 +6,7 @@ export const emailFormSchema = z.object({
 });
 
 export const otpFormSchema = z.object({
-  pin: z.string().min(6, {
+  otp: z.string().min(6, {
     message: "Your one-time password must be 6 characters.",
   }),
 });

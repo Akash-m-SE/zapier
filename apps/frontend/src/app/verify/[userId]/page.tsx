@@ -35,12 +35,12 @@ const OtpVerification = () => {
   const form = useForm<z.infer<typeof otpFormSchema>>({
     resolver: zodResolver(otpFormSchema),
     defaultValues: {
-      pin: "",
+      otp: "",
     },
   });
 
   async function onSubmit(data: z.infer<typeof otpFormSchema>) {
-    const parsedOtp: number = parseInt(data.pin, 10);
+    const parsedOtp: number = parseInt(data.otp, 10);
 
     try {
       setLoading(true);
@@ -97,7 +97,7 @@ const OtpVerification = () => {
           </h1>
           <FormField
             control={form.control}
-            name="pin"
+            name="otp"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-bold text-md">

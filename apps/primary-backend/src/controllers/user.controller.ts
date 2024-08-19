@@ -12,7 +12,13 @@ import { tokenType, tokenVerifier } from "../services/tokenVerifierService";
 import { HTTP_STATUS_CODES, HTTP_STATUS_MESSAGES } from "@repo/http-status";
 import { otpCreate } from "../services/otpService";
 import { sendEmail } from "@repo/mailer-config";
-import { SigninSchema, SignupSchema } from "@repo/zod-schemas";
+import {
+  emailFormSchema,
+  otpFormSchema,
+  passwordFormSchema,
+  SigninSchema,
+  SignupSchema,
+} from "@repo/zod-schemas";
 
 const signupUser = asyncHandler(async (req: Request, res: Response) => {
   const body = req.body;
@@ -309,6 +315,147 @@ const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(200, {}, "Email verified successfully"));
 });
 
+// Forgot Password Controllers
+const generateForgotPasswordOTP = asyncHandler(
+  async (req: Request, res: Response) => {
+    const body = req.body;
+    const parsedData = emailFormSchema.safeParse(body);
+
+    if (!parsedData.success) {
+      console.log("Error while parsing data = ", parsedData.error);
+      throw new ApiError(411, "Error while parsing data");
+    }
+
+    const email = parsedData.data.email;
+
+    const user = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const otp = otpCreate();
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        otp: otp,
+      },
+    });
+
+    if (!updatedUser) {
+      throw new ApiError(404, "Failed to update user");
+    }
+
+    const mailBody = otp.toString();
+    await sendEmail(email, mailBody);
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "OTP sent successfully"));
+  },
+);
+
+const validateForgotPasswordOTP = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      throw new ApiError(404, "All fields are required");
+    }
+
+    const parsedData = otpFormSchema.safeParse({ otp });
+    if (!parsedData.success) {
+      console.log("Error while parsing data = ", parsedData.error);
+      throw new ApiError(411, "Error while parsing data");
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const parsedOtp: number = parseInt(otp, 10);
+    if (parsedOtp !== user.otp) {
+      throw new ApiError(400, "Invalid OTP");
+    }
+
+    if (parsedOtp === user.otp) {
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          otp: null,
+        },
+      });
+      return res.status(200).json(new ApiResponse(200, {}, "OTP verified"));
+    }
+  },
+);
+
+const resetForgotPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const {
+      email,
+      password,
+      confirmPassword,
+    }: { email: string; password: string; confirmPassword: string } = req.body;
+
+    if (!email || !password || !confirmPassword) {
+      throw new ApiError(404, "All fields are required");
+    }
+
+    const parsedData = passwordFormSchema.safeParse({
+      password,
+      confirmPassword,
+    });
+    if (!parsedData.success) {
+      console.log("Error while parsing data = ", parsedData.error);
+      throw new ApiError(411, "Error while parsing data");
+    }
+
+    if (password !== confirmPassword) {
+      throw new ApiError(400, "Passwords do not match");
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const hashedPassword = await hashPassword(password);
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    });
+
+    await sendEmail(user.email, "Your password has been reset successfully");
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Password reset successfully"));
+  },
+);
+
 export {
   signupUser,
   signinUser,
@@ -317,4 +464,7 @@ export {
   refreshAccessToken,
   generateOtp,
   verifyEmail,
+  generateForgotPasswordOTP,
+  validateForgotPasswordOTP,
+  resetForgotPassword,
 };

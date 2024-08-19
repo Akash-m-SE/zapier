@@ -1,1 +1,7 @@
-export { SigninSchema, SignupSchema } from "@repo/zod-schemas";
+export {
+  SigninSchema,
+  SignupSchema,
+  emailFormSchema,
+  otpFormSchema,
+  passwordFormSchema,
+} from "@repo/zod-schemas";

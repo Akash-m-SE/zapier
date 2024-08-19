@@ -1,33 +1,28 @@
 "use client";
 
-import React from "react";
+import React, { forwardRef } from "react";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
 }
 
-export const Input = ({
-  label,
-  placeholder,
-  onChange,
-  type = "text",
-}: {
-  label: string;
-  placeholder: string;
-  onChange: (e: any) => void;
-  type?: "text" | "password";
-}) => {
-  return (
-    <div>
-      <div className="text-sm pb-1 pt-2">
-        <label>{label}</label>
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ label, ...props }, ref) => {
+    return (
+      <div>
+        {label && (
+          <div className="text-sm pb-1 pt-2">
+            <label htmlFor={label}>{label}</label>
+          </div>
+        )}
+        <input
+          ref={ref}
+          className="border rounded px-4 py-2 w-full border-black"
+          {...props}
+        />
       </div>
-      <input
-        className="border rounded px-4 py-2 w-full border-black"
-        type={type}
-        placeholder={placeholder}
-        onChange={onChange}
-      />
-    </div>
-  );
-};
+    );
+  },
+);
+
+Input.displayName = "Input";

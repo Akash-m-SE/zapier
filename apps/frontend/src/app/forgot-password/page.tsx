@@ -31,8 +31,9 @@ import {
 } from "@repo/zod-schemas";
 
 const ForgotPassword = () => {
-  const [loading, setLoading] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [emailVerified, setEmailVerified] = useState<boolean>(true);
   const router = useRouter();
 
   const emailForm = useForm<z.infer<typeof emailFormSchema>>({
@@ -45,7 +46,7 @@ const ForgotPassword = () => {
   const otpForm = useForm<z.infer<typeof otpFormSchema>>({
     resolver: zodResolver(otpFormSchema),
     defaultValues: {
-      pin: "",
+      otp: "",
     },
   });
 
@@ -57,27 +58,27 @@ const ForgotPassword = () => {
     },
   });
 
-  const onSubmitEmailForm = (values: z.infer<typeof emailFormSchema>) => {
+  const onSubmitEmailForm = async (values: z.infer<typeof emailFormSchema>) => {
     try {
+      setEmail(values.email);
       // TODO:- send a post axios request to generate otp for resetting password
       // const res = await axiosInstance.post()
       // toast({
       //   description: res.data.message,
       //   className: "bg-green-400 font-semibold",
       // });
-      console.log("values = ", values);
+      console.log("values = ", values.email);
     } catch (error) {
       console.log("Error while sending the otp = ", error);
     }
   };
 
   const onSubmitOtpForm = async (data: z.infer<typeof otpFormSchema>) => {
-    const parsedOtp: number = parseInt(data.pin, 10);
-
     try {
       setLoading(true);
       // const res = await axiosInstance.post(`/api/v1/user/verify/${userId}`, {
-      //   otp: parsedOtp,
+      // email: //get from usestate
+      //   otp: otp,
       // });
 
       // toast({
@@ -138,6 +139,7 @@ const ForgotPassword = () => {
 
   return (
     <>
+      {email}
       <div
         className={`${emailVerified ? "hidden" : "flex"} flex-col items-center justify-center p-2 h-auto xl:h-[80vh] w-auto`}
         id="email-otp-form"
@@ -183,7 +185,7 @@ const ForgotPassword = () => {
             </h2>
             <FormField
               control={otpForm.control}
-              name="pin"
+              name="otp"
               render={({ field }) => (
                 <FormItem className="flex flex-col items-center justify-center">
                   <FormLabel className="font-bold text-md">
@@ -244,7 +246,7 @@ const ForgotPassword = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="password" label="password" {...field} />
+                    <Input placeholder="password" type="password" {...field} />
                   </FormControl>
                   <FormDescription>Enter your new password</FormDescription>
                   <FormMessage />
@@ -261,7 +263,7 @@ const ForgotPassword = () => {
                   <FormControl>
                     <Input
                       placeholder="confirm password"
-                      label="confirm-password"
+                      type="password"
                       {...field}
                     />
                   </FormControl>
