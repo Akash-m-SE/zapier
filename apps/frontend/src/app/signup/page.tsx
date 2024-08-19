@@ -7,6 +7,7 @@ import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { CheckFeature } from "@/components/CheckFeature";
 import { Input } from "@/components/Input";
 import axiosInstance from "@/utils/axiosInstance";
+import Link from "next/link";
 
 const Signup = () => {
   const router = useRouter();
@@ -81,11 +82,17 @@ const Signup = () => {
               <PrimaryButton
                 onClick={() => signupHandler()}
                 size="big"
-                className="h-10 rounded-lg"
+                className="h-10 rounded-lg mb-10"
               >
                 Get started free
               </PrimaryButton>
             </div>
+            <Link
+              href={"/forgot-password"}
+              className="flex justify-end font-semibold text-blue-500 underline hover:text-black duration-500"
+            >
+              Forgot Password?
+            </Link>
           </div>
         </div>
       </div>

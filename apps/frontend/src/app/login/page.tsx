@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { Input } from "@/components/Input";
-import LinkButton from "@/components/buttons/LinkButton";
 import useStore from "@/store";
 import axiosInstance from "@/utils/axiosInstance";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -56,14 +57,14 @@ const Login = () => {
               automate their work in minutes, not months—no coding required.
             </h3>
 
-            <LinkButton
+            <Button
               onClick={() => {
                 router.push("/enterprise");
               }}
               className="text-base font-semibold text-white bg-blue-800 w-full sm:w-[30vw] md:w-[30vw] lg:w-[20vw] h-[44px] flex justify-center items-center hover:bg-blue-600 duration-500"
             >
               Explore Zapier Enterprise
-            </LinkButton>
+            </Button>
           </div>
 
           <div
@@ -90,11 +91,17 @@ const Login = () => {
                 type="password"
                 placeholder="Password"
               ></Input>
-              <div className="pt-4">
+              <div className="pt-4 mb-10">
                 <PrimaryButton onClick={() => clickHandler()} size="big">
                   Login
                 </PrimaryButton>
               </div>
+              <Link
+                href={"/forgot-password"}
+                className="flex justify-end font-semibold text-blue-500 underline hover:text-black duration-500"
+              >
+                Forgot Password?
+              </Link>
             </div>
           </div>
         </div>

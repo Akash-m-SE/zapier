@@ -1,5 +1,11 @@
 "use client";
 
+import React from "react";
+
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+}
+
 export const Input = ({
   label,
   placeholder,
@@ -14,7 +20,7 @@ export const Input = ({
   return (
     <div>
       <div className="text-sm pb-1 pt-2">
-        * <label>{label}</label>
+        <label>{label}</label>
       </div>
       <input
         className="border rounded px-4 py-2 w-full border-black"

@@ -7,6 +7,7 @@ import PrimaryButton from "./buttons/PrimaryButton";
 import Image from "next/image";
 import useStore from "@/store";
 import axiosInstance from "@/utils/axiosInstance";
+import { Button } from "./ui/button";
 
 const Appbar = () => {
   const router = useRouter();
@@ -39,19 +40,17 @@ const Appbar = () => {
           className="cursor-pointer"
         />
       </div>
-      <div className="flex">
-        <div className="pr-4">
-          <LinkButton onClick={() => {}}>Contact Sales</LinkButton>
-        </div>
-        <div className="pr-4">
-          <LinkButton
-            onClick={() => {
-              router.push("/login");
-            }}
-          >
-            Login
-          </LinkButton>
-        </div>
+      <div className="flex gap-3">
+        <LinkButton onClick={() => {}}>Contact Sales</LinkButton>
+
+        <Button
+          onClick={() => {
+            router.push("/login");
+          }}
+        >
+          Login
+        </Button>
+
         <PrimaryButton
           onClick={() => {
             router.push("/signup");
@@ -59,7 +58,9 @@ const Appbar = () => {
         >
           Signup
         </PrimaryButton>
-        <button onClick={() => logoutHandler()}>Logout</button>
+        <Button variant="destructive" onClick={() => logoutHandler()}>
+          Logout
+        </Button>
       </div>
     </div>
   );
