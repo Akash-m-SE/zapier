@@ -23,12 +23,7 @@ import {
 } from "@/components/ui/input-otp";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-
-const FormSchema = z.object({
-  pin: z.string().min(6, {
-    message: "Your one-time password must be 6 characters.",
-  }),
-});
+import { otpFormSchema } from "@repo/zod-schemas";
 
 const OtpVerification = () => {
   const params = useParams();
@@ -37,14 +32,14 @@ const OtpVerification = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof otpFormSchema>>({
+    resolver: zodResolver(otpFormSchema),
     defaultValues: {
       pin: "",
     },
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(data: z.infer<typeof otpFormSchema>) {
     const parsedOtp: number = parseInt(data.pin, 10);
 
     try {

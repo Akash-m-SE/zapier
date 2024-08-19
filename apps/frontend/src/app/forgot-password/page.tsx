@@ -24,25 +24,11 @@ import axiosInstance from "@/utils/axiosInstance";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { ToastAction } from "@/components/ui/toast";
-
-const emailFormSchema = z.object({
-  email: z.string().min(5),
-});
-
-const otpFormSchema = z.object({
-  pin: z.string().min(6, {
-    message: "Your one-time password must be 6 characters.",
-  }),
-});
-
-const passwordFormSchema = z.object({
-  password: z.string().min(6, {
-    message: "Your password must be atleast 6 characters.",
-  }),
-  confirmPassword: z.string().min(6, {
-    message: "Your password must be atleast 6 characters.",
-  }),
-});
+import {
+  emailFormSchema,
+  otpFormSchema,
+  passwordFormSchema,
+} from "@repo/zod-schemas";
 
 const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
@@ -79,6 +65,7 @@ const ForgotPassword = () => {
       //   description: res.data.message,
       //   className: "bg-green-400 font-semibold",
       // });
+      console.log("values = ", values);
     } catch (error) {
       console.log("Error while sending the otp = ", error);
     }

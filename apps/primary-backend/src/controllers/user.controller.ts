@@ -1,5 +1,4 @@
 import prisma from "../lib/prisma";
-import { SigninSchema, SignupSchema } from "../../types/zodSchemas";
 import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
@@ -13,6 +12,7 @@ import { tokenType, tokenVerifier } from "../services/tokenVerifierService";
 import { HTTP_STATUS_CODES, HTTP_STATUS_MESSAGES } from "@repo/http-status";
 import { otpCreate } from "../services/otpService";
 import { sendEmail } from "@repo/mailer-config";
+import { SigninSchema, SignupSchema } from "@repo/zod-schemas";
 
 const signupUser = asyncHandler(async (req: Request, res: Response) => {
   const body = req.body;
@@ -299,6 +299,7 @@ const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
       id: userId,
     },
     data: {
+      otp: null,
       verify: true,
     },
   });

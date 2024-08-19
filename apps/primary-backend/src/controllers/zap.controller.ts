@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import prisma from "../lib/prisma";
-import { ZapCreateSchema } from "../../types/zodSchemas";
+
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
+import { ZapCreateSchema } from "@repo/zod-schemas";
 
 // Create New Zap
 const createNewZap = asyncHandler(async (req: Request, res: Response) => {
