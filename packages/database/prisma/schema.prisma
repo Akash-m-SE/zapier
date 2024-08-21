@@ -44,10 +44,12 @@ model Zap {
 
 model Trigger {
   id        String           @id @default(uuid())
-  zapId     String           @unique
-  triggerId String
   metadata  Json             @default("{}")
+  
+  triggerId String
   type      AvailableTrigger @relation(fields: [triggerId], references: [id])
+  
+  zapId     String           @unique
   zap       Zap              @relation(fields: [zapId], references: [id])
 
   createdAt DateTime @default(now())
@@ -63,10 +65,12 @@ model AvailableTrigger {
 
 model Action {
   id       String          @id @default(uuid())
+  metadata Json            @default("{}")
+  
   zapId    String
   zap      Zap             @relation(fields: [zapId], references: [id])
+  
   actionId String
-  metadata Json            @default("{}")
   type     AvailableAction @relation(fields: [actionId], references: [id])
 
   sortingOrder Int @default(0)
@@ -84,6 +88,7 @@ model AvailableAction {
 
 model ZapRun {
   id    String @id @default(uuid())
+  
   zapId String
   zap   Zap    @relation(fields: [zapId], references: [id])
 

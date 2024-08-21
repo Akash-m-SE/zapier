@@ -4,6 +4,7 @@ import prisma from "../lib/prisma";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
 import { ZapCreateSchema } from "@repo/zod-schemas";
+import { ApiResponse } from "../utils/ApiResponse";
 
 // Create New Zap
 const createNewZap = asyncHandler(async (req: Request, res: Response) => {
@@ -120,4 +121,57 @@ const getSingleZap = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-export { createNewZap, listAllZaps, getSingleZap };
+// Delete a Singular Zap
+const deleteSingleZap = asyncHandler(async (req: Request, res: Response) => {
+  const zapId = req.params.zapId;
+  if (!zapId) {
+    throw new ApiError(404, "No Zaps found");
+  }
+
+  const zap = await prisma.$transaction(async (tx) => {
+    await tx.trigger.delete({
+      where: {
+        zapId: zapId,
+      },
+    });
+
+    await tx.action.deleteMany({
+      where: {
+        zapId: zapId,
+      },
+    });
+
+    const zapRuns = await tx.zapRun.findMany({
+      where: {
+        zapId: zapId,
+      },
+    });
+    const zapRunIds = zapRuns.map((zapRun) => zapRun.id);
+
+    await tx.zapRun.deleteMany({
+      where: {
+        zapId: zapId,
+      },
+    });
+
+    await tx.zapRunOutbox.deleteMany({
+      where: {
+        zapRunId: {
+          in: zapRunIds,
+        },
+      },
+    });
+
+    await tx.zap.delete({
+      where: {
+        id: zapId,
+      },
+    });
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Zap deleted successfully"));
+});
+
+export { createNewZap, listAllZaps, getSingleZap, deleteSingleZap };
