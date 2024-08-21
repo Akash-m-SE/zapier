@@ -9,11 +9,11 @@ import { Feature } from "./Feature";
 const Hero = () => {
   const router = useRouter();
   return (
-    <div>
-      <div className="flex justify-center">
-        <div className="text-5xl font-semibold text-center pt-8 max-w-xl">
+    <>
+      <div className="flex items-center justify-center p-5">
+        <h1 className="scroll-m-20 text-4xl text-center font-semibold tracking-tight lg:text-5xl">
           Automate as fast as you can type
-        </div>
+        </h1>
       </div>
       <div className="flex justify-center pt-2">
         <div className="text-xl font-normal text-center pt-8 max-w-2xl">
@@ -23,30 +23,30 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className="flex justify-center pt-4">
-        <div className="flex">
-          <PrimaryButton
-            onClick={() => {
-              router.push("/signup");
-            }}
-            size="big"
-          >
-            Get Started free
-          </PrimaryButton>
-          <div className="pl-4">
-            <SecondaryButton onClick={() => {}} size="big">
-              Contact Sales
-            </SecondaryButton>
-          </div>
-        </div>
+      <div
+        className="flex flex-col sm:flex-row items-center justify-center p-5 gap-5 w-full"
+        id="hero-buttons"
+      >
+        <PrimaryButton
+          onClick={() => {
+            router.push("/signup");
+          }}
+          size="big"
+        >
+          Get Started free
+        </PrimaryButton>
+
+        <SecondaryButton onClick={() => {}} size="big">
+          Contact Sales
+        </SecondaryButton>
       </div>
 
-      <div className="flex justify-center pt-4">
+      <div className="flex flex-col sm:flex-row items-center justify-center pt-4 gap-3">
         <Feature title={"Free Forever"} subtitle={"for core features"} />
         <Feature title={"More apps"} subtitle={"than any other platforms"} />
         <Feature title={"Cutting Edge"} subtitle={"AI Features"} />
       </div>
-    </div>
+    </>
   );
 };
 export default Hero;

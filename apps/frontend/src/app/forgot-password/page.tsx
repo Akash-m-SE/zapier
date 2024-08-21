@@ -102,8 +102,8 @@ const ForgotPassword = () => {
         className: "bg-green-400 font-semibold",
       });
 
-      otpForm.reset();
       setEmailVerified(true);
+      otpForm.reset();
     } catch (error: any) {
       console.log("Error while verifying the user = ", error);
       toast({
@@ -120,7 +120,6 @@ const ForgotPassword = () => {
   const resendOtpHandler = async () => {
     try {
       setLoading(true);
-      otpForm.reset();
       // TODO: make and regenerate otp for resetting the password
       const res = await axiosInstance.post(
         `api/v1/user/forgot-password-generate-otp`,
@@ -133,6 +132,7 @@ const ForgotPassword = () => {
         description: res.data.message,
         className: "bg-blue-400 font-semibold",
       });
+      otpForm.reset();
     } catch (error: any) {
       console.log("Error while resending the otp = ", error);
       toast({
@@ -160,12 +160,12 @@ const ForgotPassword = () => {
         },
       );
 
-      passwordForm.reset();
       setEmailVerified(false);
       toast({
         description: res.data.message,
         className: "bg-blue-400 font-semibold",
       });
+      passwordForm.reset();
 
       router.push("/login");
     } catch (error: any) {

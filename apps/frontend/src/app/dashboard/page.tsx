@@ -41,23 +41,21 @@ const Dashboard = () => {
 
   return (
     <>
-      <div>
-        <div className="flex justify-center pt-8">
-          <div className="max-w-screen-lg	 w-full">
-            <div className="flex justify-between pr-8 ">
-              <div className="text-2xl font-bold">My Zaps</div>
-              <DarkButton
-                onClick={() => {
-                  router.push("/zap/create");
-                }}
-              >
-                Create
-              </DarkButton>
-            </div>
+      <div className="flex justify-center">
+        <div className="max-w-screen-lg	 w-full">
+          <div className="flex justify-between p-10">
+            <div className="text-2xl font-bold">My Zaps</div>
+            <DarkButton
+              onClick={() => {
+                router.push("/zap/create");
+              }}
+            >
+              Create
+            </DarkButton>
           </div>
         </div>
       </div>
-      {zaps.length == 0 && <div>No zaps found</div>}
+
       <div className="container mx-auto py-10">
         <DataTable columns={columns} data={zaps} />
       </div>

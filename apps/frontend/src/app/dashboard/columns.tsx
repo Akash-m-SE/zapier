@@ -33,6 +33,7 @@ const DeleteZapButton: React.FC<DeleteZapButtonProps> = ({ zapId }) => {
 
       toast({
         description: res.data.message,
+        className: "bg-green-400 font-semibold",
       });
     } catch (error) {
       console.log("Error while deleting the zap = ", error);

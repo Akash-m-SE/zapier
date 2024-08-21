@@ -3,6 +3,7 @@
 import { BACKEND_URL } from "@/app/config";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { Input } from "@/components/Input";
+import { toast } from "@/components/ui/use-toast";
 import { ZapCell } from "@/components/ZapCell";
 import useStore from "@/store";
 import axiosInstance from "@/utils/axiosInstance";
@@ -59,7 +60,7 @@ const CreateNewZap = () => {
       return;
     }
 
-    const response = await axiosInstance.post(`/api/v1/zap`, {
+    const res = await axiosInstance.post(`/api/v1/zap`, {
       availableTriggerId: selectedTrigger.id,
       triggerMetadata: {},
       actions: selectedActions.map((a) => ({
@@ -69,6 +70,10 @@ const CreateNewZap = () => {
     });
 
     router.push("/dashboard");
+    toast({
+      description: res.data.message,
+      className: "bg-green-400 font-semibold",
+    });
   };
 
   return (
@@ -299,8 +304,9 @@ const EmailSelector = ({
         placeholder="Body"
         onChange={(e) => setBody(e.target.value)}
       ></Input>
-      <div className="pt-2">
+      <div className="flex items-center justify-center p-2">
         <PrimaryButton
+          className="min-w-full"
           onClick={() => {
             setMetadata({
               email,
@@ -326,15 +332,15 @@ const SolanaSelector = ({
   return (
     <div>
       <Input
-        label={"To"}
+        label={"Wallet Address"}
         type={"text"}
-        placeholder="To"
+        placeholder="Address"
         onChange={(e) => setAddress(e.target.value)}
       ></Input>
       <Input
         label={"Amount"}
         type={"text"}
-        placeholder="To"
+        placeholder="Amount"
         onChange={(e) => setAmount(e.target.value)}
       ></Input>
       <div className="pt-4">

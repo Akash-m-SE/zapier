@@ -9,20 +9,45 @@ import useStore from "@/store";
 import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { SigninSchema } from "@repo/zod-schemas";
+import { toast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const signinForm = useForm<z.infer<typeof SigninSchema>>({
+    resolver: zodResolver(SigninSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
   const updateUserDetails = useStore((state) => state.updateUserDetails);
 
-  const clickHandler = async () => {
+  async function onSubmit(values: z.infer<typeof SigninSchema>) {
     try {
+      setLoading(true);
+      const { email, password } = values;
       const res = await axiosInstance.post(`/api/v1/user/signin`, {
         email,
         password,
       });
+      signinForm.reset();
       const userId = res.data.data.userId;
       const accessToken = res.data.data.accessToken;
       updateUserDetails(userId, accessToken);
@@ -32,10 +57,23 @@ const Login = () => {
       } else {
         router.push("/dashboard");
       }
-    } catch (error) {
+
+      toast({
+        description: res.data.message,
+        className: "bg-green-400 font-semibold",
+      });
+    } catch (error: any) {
       console.log("Error while signing in = ", error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.response.data.message,
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
   return (
     <>
@@ -71,38 +109,55 @@ const Login = () => {
             className="flex flex-col justify-center w-auto sm:w-[40vw] md:w-[40vw] lg:w-[30vw] p-1"
             id="login-right-content"
           >
-            <h2 className="text-center font-bold text-2xl">
-              Log into your account
-            </h2>
-            <div className="flex-1 pt-6 pb-6 mt-12 px-4 border rounded">
-              <Input
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-                label={"Email"}
-                type="text"
-                placeholder="Your Email"
-              ></Input>
-              <Input
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-                label={"Password"}
-                type="password"
-                placeholder="Password"
-              ></Input>
-              <div className="pt-4 mb-10">
-                <PrimaryButton onClick={() => clickHandler()} size="big">
+            <Form {...signinForm}>
+              <form
+                onSubmit={signinForm.handleSubmit(onSubmit)}
+                className="space-y-8 flex-1 pt-6 pb-6 mt-12 px-4 border rounded"
+              >
+                <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0 text-center">
+                  Log into your account
+                </h2>
+                <FormField
+                  control={signinForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={signinForm.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="password"
+                          type="password"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <PrimaryButton type="submit" size="big" className="min-w-full">
                   Login
                 </PrimaryButton>
-              </div>
-              <Link
-                href={"/forgot-password"}
-                className="flex justify-end font-semibold text-blue-500 underline hover:text-black duration-500"
-              >
-                Forgot Password?
-              </Link>
-            </div>
+                <Link
+                  href={"/forgot-password"}
+                  className="flex justify-end font-semibold text-blue-500 underline hover:text-black duration-500"
+                >
+                  Forgot Password?
+                </Link>
+              </form>
+            </Form>
           </div>
         </div>
       </div>

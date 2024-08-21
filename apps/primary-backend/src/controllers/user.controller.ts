@@ -70,7 +70,6 @@ const signinUser = asyncHandler(async (req: Request, res: Response) => {
   const body = req.body;
 
   const parsedData = SigninSchema.safeParse(body);
-
   if (!parsedData.success) {
     throw new ApiError(411, "Incorrect Inputs.");
   }
@@ -109,7 +108,7 @@ const signinUser = asyncHandler(async (req: Request, res: Response) => {
       new ApiResponse(
         200,
         { userId: user.id, accessToken: accessToken, verify: user.verify },
-        "User logged in successfully",
+        "Logged in successfully",
       ),
     );
 });
@@ -132,7 +131,7 @@ const signoutUser = asyncHandler(async (req: Request, res: Response) => {
   return res
     .status(200)
     .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User Logged Out Successfully"));
+    .json(new ApiResponse(200, {}, "Logged Out Successfully"));
 });
 
 // Fetch the currently logged in user
