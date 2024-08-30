@@ -1,362 +1,137 @@
 "use client";
 
-import { BACKEND_URL } from "@/app/config";
-import PrimaryButton from "@/components/buttons/PrimaryButton";
-import { Input } from "@/components/Input";
+import ActionNode from "@/components/React-Flow/ActionNode";
+import { initialEdges, initialNodes } from "@/components/React-Flow/constants";
+import TriggerNode from "@/components/React-Flow/TriggerNode";
+import { Button } from "@/components/ui/button";
+import { ToastAction } from "@/components/ui/toast";
 import { toast } from "@/components/ui/use-toast";
-import { ZapCell } from "@/components/ZapCell";
-import useStore from "@/store";
 import axiosInstance from "@/utils/axiosInstance";
 
-import axios from "axios";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import {
+  ReactFlow,
+  Background,
+  BackgroundVariant,
+  Controls,
+  NodeTypes,
+  ReactFlowProvider,
+  useEdgesState,
+  useNodesState,
+} from "@xyflow/react";
 
-const useAvailableActionsAndTriggers = () => {
-  const [availableActions, setAvailableActions] = useState([]);
-  const [availableTriggers, setAvailableTriggers] = useState([]);
+import "@xyflow/react/dist/style.css";
 
-  useEffect(() => {
-    axios
-      .get(`${BACKEND_URL}/api/v1/trigger/available`)
-      .then((x) => setAvailableTriggers(x.data.availableTriggers));
-
-    axios
-      .get(`${BACKEND_URL}/api/v1/action/available`)
-      .then((x) => setAvailableActions(x.data.availableActions));
-  }, []);
-
-  return {
-    availableActions,
-    availableTriggers,
-  };
+const nodeTypes: NodeTypes = {
+  trigger: TriggerNode,
+  action: ActionNode,
 };
 
 const CreateNewZap = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [clicked, setClicked] = useState<number>(0);
   const router = useRouter();
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  const { availableActions, availableTriggers } =
-    useAvailableActionsAndTriggers();
-  const [selectedTrigger, setSelectedTrigger] = useState<{
-    id: string;
-    name: string;
-  }>();
+  const publishZapHandler = async () => {
+    try {
+      await axiosInstance.post("/api/v1/zap", {
+        availableTriggerId: nodes[0].data.triggerId,
+        actions: nodes.slice(1).map((action) => ({
+          availableActionId: action.data.actionId,
+          actionMetadata: JSON.parse(action.data.metadata as string),
+        })),
+      });
 
-  const [selectedActions, setSelectedActions] = useState<
-    {
-      index: number;
-      availableActionId: string;
-      availableActionName: string;
-      metadata: any;
-    }[]
-  >([]);
-  const [selectedModalIndex, setSelectedModalIndex] = useState<null | number>(
-    null,
-  );
-
-  const publishHandler = async () => {
-    if (!selectedTrigger?.id) {
-      return;
+      toast({
+        description: "Your zap has been created.",
+      });
+      router.push("/dashboard");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description:
+          error.response.data.message ||
+          "There was a problem with your request.",
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
     }
-
-    const res = await axiosInstance.post(`/api/v1/zap`, {
-      availableTriggerId: selectedTrigger.id,
-      triggerMetadata: {},
-      actions: selectedActions.map((a) => ({
-        availableActionId: a.availableActionId,
-        actionMetadata: a.metadata,
-      })),
-    });
-
-    router.push("/dashboard");
-    toast({
-      description: res.data.message,
-      className: "bg-green-400 font-semibold",
-    });
   };
 
+  const addNode = async () => {
+    setNodes((prevNodes) => [
+      ...prevNodes,
+      {
+        id: (prevNodes.length + 1).toString(),
+        position: {
+          x: prevNodes[prevNodes.length - 1].position.x,
+          y: prevNodes[prevNodes.length - 1].position.y + 200,
+        },
+        data: { actionId: "", actionName: "", actionImg: "", metadata: "" },
+        type: "action",
+      },
+    ]);
+    setClicked((prev) => prev + 1);
+  };
+
+  const addEdge = async () => {
+    setEdges((prevEdges) => [
+      ...prevEdges,
+      {
+        id: `ed-${edges.length + 1}`,
+        source: prevEdges[prevEdges.length - 1].target.toString(),
+        target: nodes[nodes.length - 1].id.toString(),
+      },
+    ]);
+  };
+
+  const fitViewOptions = {
+    maxZoom: 1,
+    minZoom: 0.5,
+  };
+
+  useEffect(() => {
+    if (clicked !== 0) {
+      addEdge();
+    }
+  }, [clicked]);
+
   return (
-    <div>
-      <div className="flex justify-end bg-slate-200 p-4">
-        <PrimaryButton onClick={() => publishHandler()}>Publish</PrimaryButton>
-      </div>
-      <div className="w-full min-h-screen bg-slate-200 flex flex-col justify-center">
-        <div className="flex justify-center w-full">
-          <ZapCell
-            onClick={() => {
-              setSelectedModalIndex(1);
-            }}
-            name={selectedTrigger?.name ? selectedTrigger.name : "Trigger"}
-            index={1}
-          />
+    <div className="w-full h-[92vh] relative">
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
+        zoomOnScroll={false}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        fitView
+        fitViewOptions={fitViewOptions}
+      >
+        <Background variant={BackgroundVariant.Dots} gap={10} />
+        <Controls />
+        <div className="flex items-center gap-4 absolute right-4 top-4">
+          <Button className="z-10" onClick={addNode}>
+            Add Node
+          </Button>
+          <Button className="z-10" onClick={publishZapHandler}>
+            Publish
+          </Button>
         </div>
-        <div className="w-full pt-2 pb-2">
-          {selectedActions.map((action, index) => (
-            <div key={index} className="pt-2 flex justify-center">
-              <ZapCell
-                onClick={() => {
-                  setSelectedModalIndex(action.index);
-                }}
-                name={
-                  action.availableActionName
-                    ? action.availableActionName
-                    : "Action"
-                }
-                index={action.index}
-              />
-            </div>
-          ))}
-        </div>
-        <div className="flex justify-center">
-          <div>
-            <PrimaryButton
-              onClick={() => {
-                setSelectedActions((a) => [
-                  ...a,
-                  {
-                    index: a.length + 2,
-                    availableActionId: "",
-                    availableActionName: "",
-                    metadata: {},
-                  },
-                ]);
-              }}
-            >
-              <div className="text-2xl">+</div>
-            </PrimaryButton>
-          </div>
-        </div>
-      </div>
-      {selectedModalIndex && (
-        <Modal
-          availableItems={
-            selectedModalIndex === 1 ? availableTriggers : availableActions
-          }
-          onSelect={(
-            props: null | { name: string; id: string; metadata: any },
-          ) => {
-            if (props === null) {
-              setSelectedModalIndex(null);
-              return;
-            }
-            if (selectedModalIndex === 1) {
-              setSelectedTrigger({
-                id: props.id,
-                name: props.name,
-              });
-            } else {
-              setSelectedActions((a) => {
-                let newActions = [...a];
-                newActions[selectedModalIndex - 2] = {
-                  index: selectedModalIndex,
-                  availableActionId: props.id,
-                  availableActionName: props.name,
-                  metadata: props.metadata,
-                };
-                return newActions;
-              });
-            }
-            setSelectedModalIndex(null);
-          }}
-          index={selectedModalIndex}
-        />
-      )}
+      </ReactFlow>
     </div>
   );
 };
 
-const Modal = ({
-  index,
-  onSelect,
-  availableItems,
-}: {
-  index: number;
-  onSelect: (props: null | { name: string; id: string; metadata: any }) => void;
-  availableItems: { id: string; name: string; image: string }[];
-}) => {
-  const [step, setStep] = useState(0);
-  const [selectedAction, setSelectedAction] = useState<{
-    id: string;
-    name: string;
-  }>();
-  const isTrigger = index === 1;
-
+const CreateNewZapProvider = () => {
   return (
-    <div className="fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-slate-100 bg-opacity-70 flex">
-      <div className="relative p-4 w-full max-w-2xl max-h-full">
-        <div className="relative bg-white rounded-lg shadow ">
-          <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t ">
-            <div className="text-xl">
-              Select {index === 1 ? "Trigger" : "Action"}
-            </div>
-            <button
-              onClick={() => {
-                onSelect(null);
-              }}
-              type="button"
-              className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
-              data-modal-hide="default-modal"
-            >
-              <svg
-                className="w-3 h-3"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 14 14"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                />
-              </svg>
-              <span className="sr-only">Close modal</span>
-            </button>
-          </div>
-          <div className="p-4 md:p-5 space-y-4">
-            {step === 1 && selectedAction?.id === "email" && (
-              <EmailSelector
-                setMetadata={(metadata) => {
-                  onSelect({
-                    ...selectedAction,
-                    metadata,
-                  });
-                }}
-              />
-            )}
-
-            {step === 1 && selectedAction?.id === "send-sol" && (
-              <SolanaSelector
-                setMetadata={(metadata) => {
-                  onSelect({
-                    ...selectedAction,
-                    metadata,
-                  });
-                }}
-              />
-            )}
-
-            {step === 0 && (
-              <div>
-                {availableItems.map(({ id, name, image }) => {
-                  return (
-                    <div
-                      key={id}
-                      onClick={() => {
-                        if (isTrigger) {
-                          onSelect({
-                            id,
-                            name,
-                            metadata: {},
-                          });
-                        } else {
-                          setStep((s) => s + 1);
-                          setSelectedAction({
-                            id,
-                            name,
-                          });
-                        }
-                      }}
-                      className="flex border p-4 cursor-pointer hover:bg-slate-100 gap-2"
-                    >
-                      <Image
-                        src={image}
-                        width={30}
-                        height={30}
-                        className="rounded-full"
-                        alt="image"
-                      />
-                      <div className="flex flex-col justify-center">{name}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+    <ReactFlowProvider>
+      <CreateNewZap />
+    </ReactFlowProvider>
   );
 };
 
-const EmailSelector = ({
-  setMetadata,
-}: {
-  setMetadata: (params: any) => void;
-}) => {
-  const [email, setEmail] = useState("");
-  const [body, setBody] = useState("");
-
-  return (
-    <div>
-      <Input
-        label={"To"}
-        type={"text"}
-        placeholder="To"
-        onChange={(e) => setEmail(e.target.value)}
-      ></Input>
-      <Input
-        label={"Body"}
-        type={"text"}
-        placeholder="Body"
-        onChange={(e) => setBody(e.target.value)}
-      ></Input>
-      <div className="flex items-center justify-center p-2">
-        <PrimaryButton
-          className="min-w-full"
-          onClick={() => {
-            setMetadata({
-              email,
-              body,
-            });
-          }}
-        >
-          Submit
-        </PrimaryButton>
-      </div>
-    </div>
-  );
-};
-
-const SolanaSelector = ({
-  setMetadata,
-}: {
-  setMetadata: (params: any) => void;
-}) => {
-  const [amount, setAmount] = useState("");
-  const [address, setAddress] = useState("");
-
-  return (
-    <div>
-      <Input
-        label={"Wallet Address"}
-        type={"text"}
-        placeholder="Address"
-        onChange={(e) => setAddress(e.target.value)}
-      ></Input>
-      <Input
-        label={"Amount"}
-        type={"text"}
-        placeholder="Amount"
-        onChange={(e) => setAmount(e.target.value)}
-      ></Input>
-      <div className="pt-4">
-        <PrimaryButton
-          onClick={() => {
-            setMetadata({
-              amount,
-              address,
-            });
-          }}
-        >
-          Submit
-        </PrimaryButton>
-      </div>
-    </div>
-  );
-};
-
-export default CreateNewZap;
+export default CreateNewZapProvider;

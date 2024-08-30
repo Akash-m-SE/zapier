@@ -54,9 +54,9 @@ const createNewZap = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(500, "Zap creation failed");
   }
 
-  return res.json({
-    zapId,
-  });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Zap created successfully!"));
 });
 
 // List All the Zaps
@@ -84,14 +84,18 @@ const listAllZaps = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(404, "No Zaps found");
   }
 
-  return res.json({
-    zaps,
-  });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, zaps, "Zaps found successfully"));
 });
 
 const getSingleZap = asyncHandler(async (req: Request, res: Response) => {
   const id = req.id;
   const zapId = req.params.zapId;
+
+  if (!zapId) {
+    throw new ApiError(404, "All fields are necessary");
+  }
 
   const zap = await prisma.zap.findFirst({
     where: {
@@ -116,9 +120,9 @@ const getSingleZap = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(404, "No Zaps found");
   }
 
-  return res.json({
-    zap,
-  });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, zap, "Zap found successfully"));
 });
 
 // Delete a Singular Zap

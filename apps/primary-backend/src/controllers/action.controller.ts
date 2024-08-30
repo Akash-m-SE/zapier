@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import prisma from "../lib/prisma";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
+import { ApiResponse } from "../utils/ApiResponse";
 
 const fetchAvailableActions = asyncHandler(
   async (req: Request, res: Response) => {
@@ -11,9 +12,15 @@ const fetchAvailableActions = asyncHandler(
       throw new ApiError(404, "No Available Actions found");
     }
 
-    res.json({
-      availableActions,
-    });
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          availableActions,
+          "Available Actions fetched successfully",
+        ),
+      );
   },
 );
 

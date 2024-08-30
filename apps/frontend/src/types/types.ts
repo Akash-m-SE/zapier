@@ -24,3 +24,15 @@ export interface Zap {
     };
   };
 }
+
+export interface AvailableAction {
+  id: string;
+  name: string;
+  image: string;
+}
+
+export interface AvailableTrigger {
+  id: string;
+  name: string;
+  image: string;
+}

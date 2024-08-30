@@ -21,7 +21,7 @@ const Dashboard = () => {
       setLoading(true);
       const res = await axiosInstance.get(`/api/v1/zap`);
 
-      setZaps(res.data.zaps);
+      setZaps(res.data.data);
     } catch (error) {
       console.log("Error while fetching zaps = ", error);
       toast({
@@ -37,7 +37,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchZaps();
-  }, [zaps]);
+  }, [setZaps]);
 
   return (
     <>

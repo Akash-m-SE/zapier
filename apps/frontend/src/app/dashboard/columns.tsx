@@ -151,22 +151,22 @@ export const columns: ColumnDef<Zap>[] = [
       );
     },
   },
-  {
-    accessorKey: "view",
-    header: ({ column }) => {
-      return <div className="flex items-center justify-center">View</div>;
-    },
-    cell: ({ row }) => {
-      const redirectLink = row.original.id;
-      return (
-        <div className="flex items-center justify-center">
-          <Button>
-            <Link href={`/zap/${redirectLink}`}>View Zap</Link>
-          </Button>
-        </div>
-      );
-    },
-  },
+  // {
+  //   accessorKey: "view",
+  //   header: ({ column }) => {
+  //     return <div className="flex items-center justify-center">View</div>;
+  //   },
+  //   cell: ({ row }) => {
+  //     const redirectLink = row.original.id;
+  //     return (
+  //       <div className="flex items-center justify-center">
+  //         <Button>
+  //           <Link href={`/zap/${redirectLink}`}>View Zap</Link>
+  //         </Button>
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     id: "actions",
     header: ({ column }) => {
