@@ -15,8 +15,8 @@ const SolanaSelector = () => {
   const form = useForm<SolanaSelector>({
     resolver: zodResolver(solanaSelectorSchema),
     defaultValues: {
-      to: "",
-      amount: 0,
+      address: "",
+      amount: "",
     },
   });
 
@@ -31,11 +31,11 @@ const SolanaSelector = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-4">
           <FormField
-            name="to"
+            name="address"
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>To</FormLabel>
+                <FormLabel>Address</FormLabel>
                 <Input {...field} />
               </FormItem>
             )}
@@ -46,7 +46,7 @@ const SolanaSelector = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Amount</FormLabel>
-                <Input type="number" {...field} />
+                <Input {...field} />
               </FormItem>
             )}
           />
