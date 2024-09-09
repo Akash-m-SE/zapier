@@ -47,7 +47,9 @@ const CreateNewZap = () => {
 
       toast({
         description: "Your zap has been created.",
+        className: "bg-green-400 font-semibold",
       });
+
       router.push("/dashboard");
     } catch (error: any) {
       toast({

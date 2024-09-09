@@ -18,6 +18,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface DeleteZapButtonProps {
   zapId: string;
@@ -117,8 +123,47 @@ export const columns: ColumnDef<Zap>[] = [
     },
     cell: ({ row }) => {
       const zapId = row.original.id;
-      const webhookurl = `${HOOKS_URL}/hooks/catch/1/${zapId}`;
-      return <div>{webhookurl}</div>;
+      const userId = row.original.userId;
+      // const webhookurl = `${HOOKS_URL}/hooks/catch/1/${zapId}`;
+      const webhookurl = `${HOOKS_URL}/hooks/catch/${userId}/${zapId}`;
+
+      const handleCopyWebhookUrl = async () => {
+        try {
+          await navigator.clipboard.writeText(webhookurl);
+          toast({
+            description: "Webhook URL copied to clipboard!",
+            className: "bg-green-400 font-semibold",
+          });
+        } catch (error) {
+          toast({
+            variant: "destructive",
+            title: "Failed to copy.",
+            description: "Unable to copy webhook URL to clipboard.",
+          });
+        }
+      };
+
+      return (
+        <>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <div
+                  className="cursor-pointer underline"
+                  onClick={handleCopyWebhookUrl}
+                >
+                  {webhookurl}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <h4 className="scroll-m-20 text-md font-semibold tracking-tight">
+                  Copy WebhookUrl
+                </h4>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </>
+      );
     },
   },
 

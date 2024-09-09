@@ -7,7 +7,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 
 import { Action } from "./React-Flow/ActionNode";
@@ -22,12 +21,9 @@ const SelectActionEvent = () => {
     <Sheet>
       <SheetTrigger disabled={!actionNode?.data.actionId}>
         {actionNode?.data?.metadata.length === 0 ? (
-          <Button
-            variant={"ghost"}
-            className="w-full justify-start text-destructive text-center"
-          >
+          <div className="text-md font-semibold border rounded-md p-2 m-2 cursor-pointer hover:bg-gray-100 duration-500">
             Select the event to perform
-          </Button>
+          </div>
         ) : (
           <Label className="text-base">Event configured</Label>
         )}

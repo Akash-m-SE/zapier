@@ -56,12 +56,11 @@ const Login = () => {
         router.push(`/verify/${userId}`);
       } else {
         router.push("/dashboard");
+        toast({
+          description: res.data.message,
+          className: "bg-green-400 font-semibold",
+        });
       }
-
-      toast({
-        description: res.data.message,
-        className: "bg-green-400 font-semibold",
-      });
     } catch (error: any) {
       console.log("Error while signing in = ", error);
       toast({

@@ -42,8 +42,8 @@ export async function sendEmail(to: string, body: string) {
       return {
         from: GMAIL,
         to: to,
-        subject: "Hello from Zapier + Nodemailer",
-        text: `${body} This is just a test from zapier clone + nodemailer`,
+        subject: "Zapier Clone",
+        text: `${body}`,
       };
     };
 

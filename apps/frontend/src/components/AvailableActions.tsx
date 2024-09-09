@@ -38,7 +38,7 @@ const AvailableActions = () => {
       {actions.length > 0 ? (
         <>
           {actions.map((action) => (
-            <DialogClose key={action.id}>
+            <DialogClose asChild key={action.id}>
               <Button
                 variant={"link"}
                 className="w-full flex items-center justify-start gap-4 border-2 py-6"

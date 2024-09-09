@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import PrimaryButton from "./buttons/PrimaryButton";
 import { Button } from "./ui/button";
 import LinkButton from "./buttons/LinkButton";
+import useStore from "@/store";
 
 const MobileNavbar = ({
   router,
@@ -13,9 +14,11 @@ const MobileNavbar = ({
   router: ReturnType<typeof useRouter>;
   logoutHandler: () => void;
 }) => {
+  const userId = useStore((state) => state.userId);
+
   return (
     <div
-      className="flex flex-col items-center justify-center gap-5 p-5"
+      className="flex flex-col items-center justify-center gap-5 p-2 w-full h-full"
       id="sheet-navbar-links"
     >
       <LinkButton
@@ -26,7 +29,7 @@ const MobileNavbar = ({
       </LinkButton>
 
       <Button
-        className="h-10 w-full font-medium"
+        className={`h-10 w-full font-medium ${userId ? "hidden" : "block"}`}
         onClick={() => {
           router.push("/login");
         }}
@@ -35,7 +38,7 @@ const MobileNavbar = ({
       </Button>
 
       <PrimaryButton
-        className="h-10 w-full font-medium"
+        className={`h-10 w-full font-medium ${userId ? "hidden" : "block"}`}
         onClick={() => {
           router.push("/signup");
         }}
@@ -44,7 +47,14 @@ const MobileNavbar = ({
       </PrimaryButton>
 
       <Button
-        className="h-10 w-full font-medium"
+        className={`${userId ? "block" : "hidden"} w-full h-10 font-medium`}
+        onClick={() => router.push("/dashboard")}
+      >
+        Dashboard
+      </Button>
+
+      <Button
+        className={`h-10 w-full font-medium ${userId ? "block" : "hidden"}`}
         variant="destructive"
         onClick={() => logoutHandler()}
       >

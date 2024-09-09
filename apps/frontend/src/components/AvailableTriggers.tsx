@@ -38,7 +38,7 @@ const AvailableTriggers = () => {
       {triggers.length > 0 ? (
         <>
           {triggers.map((trigger) => (
-            <DialogClose key={trigger.id}>
+            <DialogClose asChild key={trigger.id}>
               <Button
                 variant={"link"}
                 className="w-full flex items-center justify-start gap-4 border-2 py-6"

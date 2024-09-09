@@ -24,6 +24,7 @@ const Appbar = () => {
   const [isOpen, setOpen] = useState(false);
 
   const deleteUserDetails = useStore((state) => state.deleteUserDetails);
+  const userId = useStore((state) => state.userId);
 
   const logoutHandler = async () => {
     try {
@@ -48,11 +49,12 @@ const Appbar = () => {
           height={100}
           width={100}
           alt="logo"
+          priority={true}
           style={{ width: "auto", height: "auto" }}
+          className="cursor-pointer"
           onClick={() => {
             router.push("/");
           }}
-          className="cursor-pointer"
         />
       </div>
 
@@ -65,6 +67,14 @@ const Appbar = () => {
         </LinkButton>
 
         <Button
+          className={`${userId ? "block" : "hidden"}`}
+          onClick={() => router.push("/dashboard")}
+        >
+          Dashboard
+        </Button>
+
+        <Button
+          className={`${userId ? "hidden" : "block"}`}
           onClick={() => {
             router.push("/login");
           }}
@@ -73,13 +83,18 @@ const Appbar = () => {
         </Button>
 
         <PrimaryButton
+          className={`${userId ? "hidden" : "block"}`}
           onClick={() => {
             router.push("/signup");
           }}
         >
           Signup
         </PrimaryButton>
-        <Button variant="destructive" onClick={() => logoutHandler()}>
+        <Button
+          variant="destructive"
+          className={`${userId ? "block" : "hidden"}`}
+          onClick={() => logoutHandler()}
+        >
           Logout
         </Button>
       </div>

@@ -351,7 +351,7 @@ const generateForgotPasswordOTP = asyncHandler(
       throw new ApiError(404, "Failed to update user");
     }
 
-    const mailBody = otp.toString();
+    const mailBody = `Your verification code is: ${otp.toString()}`;
     await sendEmail(email, mailBody);
 
     return res
