@@ -1,3 +1,4 @@
+import { Zap } from "@/types/types";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
@@ -5,6 +6,8 @@ interface StoreState {
   userId: string;
   accessToken: string;
   updateUserDetails: (userId: string, accessToken: string) => void;
+  zaps: Zap[];
+  deleteZap: (zapId: string) => void;
   deleteUserDetails: () => void;
 }
 
@@ -14,7 +17,12 @@ const useStore = create<StoreState>()(
       userId: "",
       accessToken: "",
       updateUserDetails: (userId, accessToken) => set({ userId, accessToken }),
-      deleteUserDetails: () => set({ userId: "", accessToken: "" }),
+      zaps: [],
+      deleteZap: (zapId) =>
+        set((state) => ({
+          zaps: state.zaps.filter((zap) => zap.id !== zapId),
+        })),
+      deleteUserDetails: () => set({ userId: "", accessToken: "", zaps: [] }),
     }),
     {
       name: "userData",

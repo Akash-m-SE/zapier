@@ -24,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import useStore from "@/store";
 
 interface DeleteZapButtonProps {
   zapId: string;
@@ -32,11 +33,14 @@ interface DeleteZapButtonProps {
 const DeleteZapButton: React.FC<DeleteZapButtonProps> = ({ zapId }) => {
   const [loading, setLoading] = useState(false);
 
+  const deleteZapFromStore = useStore((state) => state.deleteZap);
+
   const deleteZap = async (zapId: string) => {
     try {
       setLoading(true);
       const res = await axiosInstance.delete(`/api/v1/zap/${zapId}`);
 
+      deleteZapFromStore(zapId);
       toast({
         description: res.data.message,
         className: "bg-green-400 font-semibold",
@@ -166,7 +170,6 @@ export const columns: ColumnDef<Zap>[] = [
       );
     },
   },
-
   {
     accessorKey: "createdAt",
     header: ({ column }) => {

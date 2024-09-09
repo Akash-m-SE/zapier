@@ -9,19 +9,23 @@ import { toast } from "@/components/ui/use-toast";
 import { Zap } from "@/types/types";
 import DarkButton from "@/components/buttons/DarkButton";
 import { useRouter } from "next/navigation";
+import useStore from "@/store";
 
 const Dashboard = () => {
   // const { loading, zaps } = useZaps();
-  const [zaps, setZaps] = useState<Zap[]>([]);
+  // const [zaps, setZaps] = useState<Zap[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+
+  const zaps = useStore((state) => state.zaps);
 
   const fetchZaps = async () => {
     try {
       setLoading(true);
       const res = await axiosInstance.get(`/api/v1/zap`);
 
-      setZaps(res.data.data);
+      useStore.setState({ zaps: res.data.data });
+      // console.log("Zaps from zustand = ", zaps);
     } catch (error) {
       console.log("Error while fetching zaps = ", error);
       toast({
@@ -37,7 +41,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchZaps();
-  }, [setZaps]);
+  }, []);
 
   return (
     <>
