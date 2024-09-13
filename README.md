@@ -1,10 +1,8 @@
-
 # Zapier Clone
 
 <img src="https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Zapier+Clone+/Zapier+CLone+github+readme+files/zapierlogo.png" alt="Logo">
 
 **Zapier Clone** is a microservices-based automation platform that simplifies and streamlines various workflows. The frontend is developed using Next.js, while Node.js handles the backend services. It features efficient code management with Turborepo, quick task processing with Kafka, and customizable workflows through webhooks, making the platform both powerful and user-friendly.
-
 
 ## Features 🌟
 
@@ -26,7 +24,6 @@
 
 - **User-Friendly Automation:** Provides an intuitive interface for setting up and managing automation workflows, enhancing user experience.
 
-
 ## Monorepo and Package Structure 📁
 
 This project uses a monorepo architecture managed by Turborepo. The repository is divided into the following apps and packages:
@@ -37,19 +34,17 @@ This project uses a monorepo architecture managed by Turborepo. The repository i
 
 - `apps/hooks`: Processes incoming webhooks, stores events in the database, and adds tasks to zapRunOutbox for Kafka processing.
 
-- `apps/primary-backend`:  Manages API endpoints, processes requests, handles authentication, and interacts with the database.
+- `apps/primary-backend`: Manages API endpoints, processes requests, handles authentication, and interacts with the database.
 
 - `apps/processor`: The processor fetches pending events from the zapRunOutbox table, sends them to Kafka for processing, and deletes the processed events, enabling reliable event-driven workflow execution.
 
 - `apps/worker`: Processes background tasks and handles webhook events using Kafka for task queuing and management. Manages data transactions and triggers workflows based on incoming requests.
-
 
 #### Packages
 
 - `@repo/ui`: A shared React component library that can be used by any application within the monorepo
 
 - `@repo/eslint-config`: shared ESLint configurations (includes `eslint-config-next` and `eslint-config-prettier`) for use across any project in the monorepo.
-
 
 - `@repo/typescript-config`: shared `tsconfig.json` files used throughout the monorepo, applicable to any project.
 
@@ -79,31 +74,28 @@ This project uses a monorepo architecture managed by Turborepo. The repository i
 
 ![App Screenshot](https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Zapier+Clone+/Zapier+CLone+github+readme+files/zapcreation.jpg)
 
-
-
-
-
-
 ## Deployment 🚀
 
 You can access the live version of Zapier Clone here: [Live Demo](https://zapier-frontend-eight.vercel.app/)
 
-
 ## Environment Setup 🛠️ {#environment-setup}
+
+You will need to obtain credentials from the respective services:
+
+- **Resend:** Sign in at at [Resend](https://resend.com/) and create an api key to get your `RESEND_API_KEY`.
 
 To run this project, you will need to add the following environment variables to your .env files (templates are provided as .env.example in each package where .env needs to be setup)
 
 - apps/hooks:- `PORT`
 
-- apps/worker:- `GMAIL` `GOOGLE_CLIENT_ID` `GOOGLE_CLIENT_SECRET` `GOOGLE_REDIRECT_URI` `GOOGLE_OAUTH_ACCESSTOKEN` `GOOGLE_OAUTH_REFRESHTOKEN`
+- apps/worker:- `RESEND_API_KEY`
 
 - apps/frontend:- `NEXT_PUBLIC_FRONTEND_URL` `NEXT_PUBLIC_BACKEND_URL` `NEXT_PUBLIC_HOOKS_URL`
 
-- apps/primary-backend:- `PORT` `JWT_PASSWORD` `CORS_ORIGIN` `ACCESS_TOKEN_SECRET` `ACCESS_TOKEN_EXPIRY` `REFRESH_TOKEN_SECRET` `REFRESH_TOKEN_EXPIRY` 
-
-  `GMAIL` `GOOGLE_CLIENT_ID` `GOOGLE_CLIENT_SECRET` `GOOGLE_REDIRECT_URI` `GOOGLE_OAUTH_ACCESSTOKEN` `GOOGLE_OAUTH_REFRESHTOKEN`
+- apps/primary-backend:- `PORT` `JWT_PASSWORD` `CORS_ORIGIN` `ACCESS_TOKEN_SECRET` `ACCESS_TOKEN_EXPIRY` `REFRESH_TOKEN_SECRET` `REFRESH_TOKEN_EXPIRY` `RESEND_API_KEY`
 
 - packages/database:- `DATABASE_URL`
+
 ## Installation 🔧
 
 **Local Installation**
@@ -125,6 +117,7 @@ npm install
 ```
 docker run --name zapier-clone-db -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres
 ```
+
 - From the root directory of the monorepo run this command to automatically migrate our database and generate our type-safe Prisma client.
 
 ```
@@ -134,14 +127,17 @@ turbo db:push db:generate
 Note: If you need to seed data into the database, follow these steps:
 
 - From the root directory of the monorepo, navigate to the database package:
+
 ```
 cd packages/database
 ```
 
 - Run the following command to seed dummy data into the database:
+
 ```
 npx prisma db seed
 ```
+
 This will seed a `webhook` trigger and `send-solana` as well as `send-email` actions
 
 **6.** Start a Kafka container
@@ -168,7 +164,6 @@ Create the kafka topic
 ./kafka-topics.sh --create --topic zap-events --bootstrap-server localhost:9092
 ```
 
-
 **7.** Start the application in development mode
 
 ```
@@ -177,7 +172,7 @@ npm run dev
 
 Note:- You can run this command in the root directory to start the entire application in development mode, or you can run it within individual packages if you only want to run specific parts.
 
- **8.**  Once started, the terminal will display the URLs where each service is hosted on their respective ports.
+**8.** Once started, the terminal will display the URLs where each service is hosted on their respective ports.
 
 ## Build ⚙️
 
@@ -188,6 +183,7 @@ npm run build
 ```
 
 This will build the entire monorepo, ensuring that all services are compiled and ready for deployment.
+
 ## Remote Caching 🧩
 
 Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.

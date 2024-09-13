@@ -1,54 +1,31 @@
-import { google } from "googleapis";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
+import { generateOtpTemplate } from "../templates/otp-template";
 import dotenv from "dotenv";
+import { generateNormalEmailTemplate } from "../templates/normal-email-template";
 
 dotenv.config();
 
-const GMAIL = process.env.GMAIL as string;
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET as string;
-const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI as string;
-const GOOGLE_OAUTH_ACCESSTOKEN = process.env.GOOGLE_OAUTH_ACCESSTOKEN as string;
-const GOOGLE_OAUTH_REFRESHTOKEN = process.env
-  .GOOGLE_OAUTH_REFRESHTOKEN as string;
+const resend = new Resend(process.env.RESEND_API_KEY as string);
 
-const OAuth2Client = new google.auth.OAuth2(
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
-  GOOGLE_REDIRECT_URI,
-);
-
-OAuth2Client.setCredentials({
-  refresh_token: GOOGLE_OAUTH_REFRESHTOKEN,
-});
-
-export async function sendEmail(to: string, body: string) {
+export async function sendEmail(
+  to: string,
+  body: string,
+  type: "otp" | "normal",
+) {
   try {
-    const accessToken = await OAuth2Client.getAccessToken();
-
-    const transport = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        type: "OAuth2",
-        user: GMAIL,
-        clientId: GOOGLE_CLIENT_ID,
-        clientSecret: GOOGLE_CLIENT_SECRET,
-        refreshToken: GOOGLE_OAUTH_REFRESHTOKEN,
-        accessToken: (accessToken.token as string) || "",
-      },
+    const data = await resend.emails.send({
+      from: `Akash <onboarding@resend.dev>`,
+      to: [to],
+      subject: "Zapier Clone",
+      html:
+        type === "otp"
+          ? generateOtpTemplate(body)
+          : generateNormalEmailTemplate(body),
     });
 
-    const mailOptions = (to: string, body: string) => {
-      return {
-        from: GMAIL,
-        to: to,
-        subject: "Zapier Clone",
-        text: `${body}`,
-      };
-    };
-
-    await transport.sendMail(mailOptions(to, body));
+    console.log("data from resend email = ", data);
   } catch (error) {
-    console.log("Error sending email : ", error);
+    // return console.error({ error });
+    console.log("Error while sending email = ", error);
   }
 }

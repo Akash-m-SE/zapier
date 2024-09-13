@@ -59,7 +59,7 @@ const signupUser = asyncHandler(async (req: Request, res: Response) => {
   // TODO: sends out email to the user to verify
 
   const emailBody = otp.toString();
-  await sendEmail(user.email, emailBody); // sends out the otp to user email after successful account creation
+  await sendEmail(user.email, emailBody, "otp"); // sends out the otp to user email after successful account creation
 
   return res
     .status(200)
@@ -266,7 +266,7 @@ const generateOtp = asyncHandler(async (req: Request, res: Response) => {
   });
 
   const body = otp.toString();
-  await sendEmail(user.email, body);
+  await sendEmail(user.email, body, "otp");
 
   return res
     .status(200)
@@ -351,8 +351,8 @@ const generateForgotPasswordOTP = asyncHandler(
       throw new ApiError(404, "Failed to update user");
     }
 
-    const mailBody = `Your verification code is: ${otp.toString()}`;
-    await sendEmail(email, mailBody);
+    const mailBody = `${otp.toString()}`;
+    await sendEmail(email, mailBody, "otp");
 
     return res
       .status(200)
@@ -447,7 +447,11 @@ const resetForgotPassword = asyncHandler(
       },
     });
 
-    await sendEmail(user.email, "Your password has been reset successfully");
+    await sendEmail(
+      user.email,
+      "Your password has been reset successfully",
+      "normal",
+    );
 
     return res
       .status(200)
