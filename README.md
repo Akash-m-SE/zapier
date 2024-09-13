@@ -222,6 +222,8 @@ npx turbo link
 
 - **Authentication:** Cookie-based authentication with bcrypt for validation
 
+- **Email Service:** Resend (for OTPs and other messages)
+
 - **Development Tools:** Turborepo, esbuild, Nodemon
 
 - **Deployment & Caching:** Vercel (with caching via Turborepo)
