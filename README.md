@@ -4,6 +4,14 @@
 
 **Zapier Clone** is a microservices-based automation platform that simplifies and streamlines various workflows. The frontend is developed using Next.js, while Node.js handles the backend services. It features efficient code management with Turborepo, quick task processing with Kafka, and customizable workflows through webhooks, making the platform both powerful and user-friendly.
 
+## Demo 🎥
+
+https://github.com/user-attachments/assets/3cea80f1-f962-457c-8a28-d92ea7cb5333
+
+If the above player does not work, you can watch the demo video here:
+
+[Watch the Demo Video](https://hosted-documents-akash.s3.eu-central-1.amazonaws.com/Zapier+Clone+/Zapier+CLone+github+readme+files/Zapier+Clone+Demo.mp4)
+
 ## Features 🌟
 
 - **Microservices Architecture:** Utilizes Next.js for the frontend and Node.js for backend services, ensuring scalability and flexibility.
@@ -210,7 +218,7 @@ npx turbo link
 
 - **Languages:** TypeScript
 
-- **Frontend:** Next.js, TailwindCSS, React Hook Form, Zustand, React Flow
+- **Frontend:** Next.js, TailwindCSS, React Hook Form, Zustand, React Flow, Shadcn/ui
 
 - **Backend:** Node.js, Express.js, bcryptjs
 
