@@ -18,22 +18,28 @@ export const authMiddleware = asyncHandler(
 
     const decodedToken = tokenVerifier(accessToken, tokenType.AccessToken);
 
-    if (!decodedToken) {
-      throw new ApiError(401, "Invalid Access Token!");
-    }
+    // if (!decodedToken) {
+    //   throw new ApiError(
+    //     HTTP_STATUS_CODES.INVALID_ACCESS_TOKEN,
+    //     HTTP_STATUS_MESSAGES.INVALID_ACCESS_TOKEN
+    //   );
+    // }
 
     const user = await prisma.user.findFirst({
       where: {
-        id: decodedToken.id,
+        id: decodedToken?.id,
       },
     });
 
     if (!user) {
-      throw new ApiError(401, "Invalid Access Token!");
+      throw new ApiError(
+        HTTP_STATUS_CODES.INVALID_ACCESS_TOKEN,
+        HTTP_STATUS_MESSAGES.INVALID_ACCESS_TOKEN,
+      );
     }
 
     // Attaching a new id field to the request object
-    req.id = decodedToken.id;
+    req.id = decodedToken?.id;
 
     next();
   },

@@ -120,7 +120,6 @@ const ForgotPassword = () => {
   const resendOtpHandler = async () => {
     try {
       setLoading(true);
-      // TODO: make and regenerate otp for resetting the password
       const res = await axiosInstance.post(
         `api/v1/user/forgot-password-generate-otp`,
         {

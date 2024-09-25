@@ -78,6 +78,9 @@ const listAllZaps = asyncHandler(async (req: Request, res: Response) => {
         },
       },
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   if (!zaps) {

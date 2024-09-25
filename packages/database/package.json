@@ -2,7 +2,7 @@
   "name": "@repo/db",
   "version": "0.0.0",
   "dependencies": {
-    "@prisma/client": "latest",
+    "@prisma/client": "^5.19.1",
     "ts-node": "^10.9.2"
   },
   "scripts": {
@@ -13,7 +13,7 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
-    "prisma": "latest"
+    "prisma": "^5.19.1"
   },
   "exports": {
     ".": "./src/index.ts"

@@ -20,7 +20,10 @@ export const tokenVerifier = (token: string, type: tokenType) => {
 
     return jwt.verify(token, secret) as JwtPayload;
   } catch (error) {
-    console.log("Error while verifying token = ", error);
+    // console.log(
+    //   "Error while verifying token in token verifier service = ",
+    //   error
+    // );
 
     if (error instanceof TokenExpiredError) {
       if (type === tokenType.AccessToken) {
@@ -53,7 +56,7 @@ export const tokenVerifier = (token: string, type: tokenType) => {
     } else {
       throw new ApiError(
         500,
-        "An unexpected error occurred while validating token.",
+        "An unexpected error occurred while validating token in token verifier service.",
       );
     }
   }

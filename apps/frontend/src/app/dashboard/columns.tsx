@@ -194,9 +194,7 @@ export const columns: ColumnDef<Zap>[] = [
         day: "2-digit",
       }).format(new Date(createdAt));
 
-      return (
-        <div className="flex items-center justify-center">{formattedDate}</div>
-      );
+      return <div className="text-start">{formattedDate}</div>;
     },
   },
   // {

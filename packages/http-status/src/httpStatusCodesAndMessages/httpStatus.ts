@@ -9,11 +9,11 @@ export const HTTP_STATUS_CODES = {
 };
 
 export const HTTP_STATUS_MESSAGES = {
-  INVALID_ACCESS_TOKEN: "Invalid Access Token. Please log in again",
+  INVALID_ACCESS_TOKEN: "Invalid Access Token. Please login again.",
   EXPIRED_ACCESS_TOKEN: "Expired Access Token.",
-  ACCESS_TOKEN_NOT_FOUND: "Access Token not found",
+  ACCESS_TOKEN_NOT_FOUND: "Access Token not found. Please login again.",
 
-  INVALID_REFRESH_TOKEN: "Invalid Refresh Token. Please sign in again",
-  EXPIRED_REFRESH_TOKEN: "Expired Refresh Token. Please sign in again",
-  REFRESH_TOKEN_NOT_FOUND: "Refresh Token not found. Please sign in again",
+  INVALID_REFRESH_TOKEN: "Invalid Refresh Token. Please login again.",
+  EXPIRED_REFRESH_TOKEN: "Expired Refresh Token. Please login again.",
+  REFRESH_TOKEN_NOT_FOUND: "Refresh Token not found. Please login again.",
 };

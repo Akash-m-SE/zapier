@@ -56,8 +56,6 @@ const signupUser = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(500, "Account creation failed");
   }
 
-  // TODO: sends out email to the user to verify
-
   const emailBody = otp.toString();
   await sendEmail(user.email, emailBody, "otp"); // sends out the otp to user email after successful account creation
 
@@ -208,16 +206,16 @@ const refreshAccessToken = asyncHandler(async (req: Request, res: Response) => {
     tokenType.RefreshToken,
   );
 
-  if (!decodedToken) {
-    throw new ApiError(
-      HTTP_STATUS_CODES.INVALID_REFRESH_TOKEN,
-      HTTP_STATUS_MESSAGES.INVALID_REFRESH_TOKEN,
-    );
-  }
+  // if (!decodedToken) {
+  //   throw new ApiError(
+  //     HTTP_STATUS_CODES.INVALID_REFRESH_TOKEN,
+  //     HTTP_STATUS_MESSAGES.INVALID_REFRESH_TOKEN,
+  //   );
+  // }
 
   const user = await prisma.user.findFirst({
     where: {
-      id: decodedToken.id,
+      id: decodedToken?.id,
     },
   });
 
