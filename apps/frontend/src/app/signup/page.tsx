@@ -143,6 +143,7 @@ const Signup = () => {
                 <PrimaryButton
                   size="big"
                   type="submit"
+                  disabled={loading}
                   className="h-15 min-w-full"
                 >
                   Submit

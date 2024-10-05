@@ -41,6 +41,10 @@ app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
   }
 });
 
+app.use((req, res) => {
+  res.send(`Hooks Server is up and running on Port ${PORT}`);
+});
+
 app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
+  console.log(`Hooks Server is listening on port ${PORT}`);
 });

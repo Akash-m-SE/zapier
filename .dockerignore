@@ -1,0 +1,43 @@
+# Ignore node_modules in any directory
+**/node_modules
+node_modules
+
+# Ignore build and dist directories (common for frontend and backend)
+**/dist
+dist/
+**/build
+build/
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore cache and temp files
+.turbo/
+.next/
+**/.turbo
+**/.next
+.cache
+.tmp
+
+# Ignore Git and other VCS-related files
+.git/
+.gitignore
+
+# Ignore environment variable files
+**/.env
+.env
+.env.*
+.env.example
+
+# Ignore Docker files, if they exist in other locations
+docker-compose.yml
+Dockerfile
+
+# Ignore IDE/editor-specific settings
+.vscode/
+.idea/
+
+# Ignore system files
+.DS_Store
+Thumbs.db

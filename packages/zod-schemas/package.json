@@ -1,11 +1,8 @@
 {
   "name": "@repo/zod-schemas",
   "version": "1.0.0",
-  "description": "",
+  "description": "Zod Schemas",
   "main": "index.js",
-  "scripts": {
-    "build": "tsc -b"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",

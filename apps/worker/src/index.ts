@@ -5,14 +5,13 @@ import { sendEmail } from "@repo/mailer-config";
 // import { sendSol } from "./solana";
 import prisma from "./lib/prisma";
 import dotenv from "dotenv";
+import { TOPIC_NAME, KAFKA_BROKER } from "@repo/kafka-config";
 
 dotenv.config();
 
-const TOPIC_NAME = "zap-events";
-
 const kafka = new Kafka({
   clientId: "outbox-processor-2",
-  brokers: ["localhost:9092"],
+  brokers: [KAFKA_BROKER],
 });
 
 async function main() {
@@ -82,7 +81,7 @@ async function main() {
         );
 
         console.log(`Sending out email to ${to} and the email body is ${body}`);
-        await sendEmail(to, body);
+        await sendEmail(to, body, "normal");
       }
 
       if (currentAction.type.id === "send-sol") {

@@ -25,7 +25,7 @@ const Dashboard = () => {
       const res = await axiosInstance.get(`/api/v1/zap`);
 
       useStore.setState({ zaps: res.data.data });
-      console.log("zaps = ", useStore.getState().zaps);
+      // console.log("zaps = ", useStore.getState().zaps);
     } catch (error) {
       console.log("Error while fetching zaps = ", error);
       toast({

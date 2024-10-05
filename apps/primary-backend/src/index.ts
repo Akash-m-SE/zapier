@@ -28,6 +28,10 @@ app.use("/api/v1/zap", zapRouter);
 app.use("/api/v1/trigger", triggerRouter);
 app.use("/api/v1/action", actionRouter);
 
+app.use((req, res) => {
+  res.send(`Server is up and running on port ${PORT}`);
+});
+
 app.listen(PORT, () => {
   console.log(`Server is listening on PORT ${PORT}`);
 });

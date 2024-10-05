@@ -24,13 +24,16 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "esbuild": "^0.23.0",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "typescript": "^5.5.4",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6"
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "@types/bcryptjs": "^2.4.6",
+    "esbuild": "0.24.0",
+    "nodemon": "^3.1.7"
   }
 }

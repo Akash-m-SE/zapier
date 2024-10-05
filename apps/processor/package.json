@@ -1,7 +1,7 @@
 {
   "name": "processor",
   "version": "1.0.0",
-  "description": "",
+  "description": "Processor backend app for producing messages to the Kafka Topic",
   "main": "index.js",
   "scripts": {
     "build": "esbuild src/index.ts --platform=node --bundle --outdir=dist",
@@ -12,7 +12,14 @@
   "license": "ISC",
   "dependencies": {
     "@repo/db": "*",
+    "@repo/kafka-config": "*",
+    "dotenv": "^16.4.5",
     "kafkajs": "^2.2.4",
     "nodemon": "^3.1.4"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "esbuild": "0.24.0"
   }
 }

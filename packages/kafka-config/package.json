@@ -1,0 +1,19 @@
+{
+  "name": "@repo/kafka-config",
+  "version": "1.0.0",
+  "description": "Kafka Configuration",
+  "main": "index.js",
+  "dependencies": {
+    "@types/node": "^22.7.4",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.2"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

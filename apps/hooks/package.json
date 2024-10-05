@@ -17,12 +17,13 @@
     "@types/express": "^4.17.21",
     "@types/node": "^20.14.12",
     "dotenv": "^16.4.5",
-    "esbuild": "^0.23.0",
     "express": "^4.19.2",
     "nodemon": "^3.1.4",
     "typescript": "^5.5.4"
   },
   "devDependencies": {
-    "prisma": "^5.17.0"
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "esbuild": "0.24.0"
   }
 }

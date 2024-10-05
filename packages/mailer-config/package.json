@@ -1,16 +1,13 @@
 {
   "name": "@repo/mailer-config",
   "version": "1.0.0",
-  "description": "",
+  "description": "Configuration for Mailer",
   "main": "index.js",
   "dependencies": {
     "@types/node": "^22.4.0",
     "dotenv": "^16.4.5",
     "resend": "^4.0.0",
     "undici-types": "^6.18.2"
-  },
-  "scripts": {
-    "build": "tsc -b"
   },
   "devDependencies": {
     "typescript": "^5.5.4"

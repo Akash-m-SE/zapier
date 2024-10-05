@@ -1,0 +1,163 @@
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: .
+      dockerfile: ./apps/frontend/Dockerfile
+    restart: on-failure:3
+    ports:
+      - 3000:3000
+    env_file:
+      - path: ./apps/frontend/.env
+        required: true
+
+  primary-backend:
+    container_name: primary-backend
+    build:
+      context: .
+      dockerfile: ./apps/primary-backend/Dockerfile
+    restart: on-failure:3
+    ports:
+      - 3001:3001
+    env_file:
+      - path: ./packages/database/.env
+        required: true
+      - path: ./packages/mailer-config/.env
+        required: true
+      - path: ./apps/primary-backend/.env
+        required: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  hooks:
+    container_name: hooks
+    build:
+      context: .
+      dockerfile: ./apps/hooks/Dockerfile
+    restart: on-failure:3
+    ports:
+      - 3002:3002
+    env_file:
+      - path: ./packages/database/.env
+        required: true
+      - path: ./apps/hooks/.env
+        required: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  processor:
+    container_name: processor
+    build:
+      context: .
+      dockerfile: ./apps/processor/Dockerfile
+    restart: on-failure:3
+    env_file:
+      - path: ./packages/database/.env
+        required: true
+      - path: ./packages/kafka-config/.env
+        required: true
+      - path: ./apps/processor/.env
+        required: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  worker:
+    container_name: worker
+    build:
+      context: .
+      dockerfile: ./apps/worker/Dockerfile
+    restart: on-failure:3
+    env_file:
+      - path: ./packages/database/.env
+        required: true
+      - path: ./packages/mailer-config/.env
+        required: true
+      - path: ./packages/kafka-config/.env
+        required: true
+      - path: ./apps/worker/.env
+        required: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  prisma-service:
+    container_name: prisma-service
+    build:
+      context: .
+      dockerfile: ./packages/database/Dockerfile
+    env_file:
+      - path: ./packages/database/.env
+        required: true
+    healthcheck:
+      test: ["CMD-SHELL", "npx prisma info"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    container_name: postgres
+    image: postgres:16
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      retries: 5
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false" # Disable auto topic creation
+    healthcheck:
+      test:
+        ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    command: >
+      bash -c "
+        echo 'Starting Kafka...' &&
+        /etc/confluent/docker/run &
+        echo 'Waiting for Kafka to start...' &&
+        sleep 30 &&
+        kafka-topics --create --if-not-exists --topic zap-events --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 &&
+        echo 'Topic created. Kafka is ready.' &&
+        wait
+      "
+
+volumes:
+  postgres_data:

@@ -6,9 +6,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "scripts": {
-    "build": "tsc -b && node dist/index.js"
-  },
   "devDependencies": {
     "typescript": "^5.5.4"
   },

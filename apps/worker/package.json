@@ -10,20 +10,21 @@
   },
   "dependencies": {
     "@repo/db": "*",
+    "@repo/kafka-config": "*",
     "@repo/mailer-config": "*",
     "@solana/web3.js": "^1.95.2",
     "@types/node": "^22.2.0",
-    "@types/nodemailer": "^6.4.15",
     "dotenv": "^16.4.5",
-    "googleapis": "^140.0.1",
     "kafkajs": "^2.2.4",
-    "nodemailer": "^6.9.14",
     "nodemon": "^3.1.4"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/bs58": "^4.0.4"
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "@types/bs58": "^4.0.4",
+    "esbuild": "0.24.0"
   }
 }

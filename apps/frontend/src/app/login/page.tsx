@@ -146,7 +146,12 @@ const Login = () => {
                     </FormItem>
                   )}
                 />
-                <PrimaryButton type="submit" size="big" className="min-w-full">
+                <PrimaryButton
+                  type="submit"
+                  size="big"
+                  disabled={loading}
+                  className="min-w-full"
+                >
                   Login
                 </PrimaryButton>
                 <Link
