@@ -18,6 +18,8 @@ If the above player does not work, you can watch the demo video here:
 
 - **Efficient Code Management:** Leveraged Turborepo for streamlined monorepo management, improving development efficiency and reducing build times.
 
+- **Dockerized Applications:** All applications are dockerized, with a comprehensive Docker Compose setup that starts all required services, facilitating a seamless development and deployment process.
+
 - **Dashboard:** Includes an informative dashboard for managing zaps.
 
 - **Workflow Configuration:** Utilizes React Flow for creating and configuring actions and triggers to build zaps.
@@ -62,6 +64,8 @@ This project uses a monorepo architecture managed by Turborepo. The repository i
 
 - `@repo/mailer-config`: Includes configuration settings for the mailing system, facilitating email setup and management.
 
+- `@repo/kafka-config`: Exports essential Kafka configuration parameters, including the Topic Name and Kafka Broker URL.
+
 - `@repo/zod-schemas`: Contains Zod schemas for data validation and type-safe parsing across the application.
 
 ## Screenshots 📸
@@ -86,7 +90,9 @@ This project uses a monorepo architecture managed by Turborepo. The repository i
 
 You can access the live version of Zapier Clone here: [Live Demo](https://zapier-frontend-eight.vercel.app/)
 
-## Environment Setup 🛠️ {#environment-setup}
+<a name="environment-setup"></a>
+
+## Environment Setup 🛠️
 
 You will need to obtain credentials from the respective services:
 
@@ -94,17 +100,59 @@ You will need to obtain credentials from the respective services:
 
 To run this project, you will need to add the following environment variables to your .env files (templates are provided as .env.example in each package where .env needs to be setup)
 
-- apps/hooks:- `PORT`
+- apps/frontend - `NEXT_PUBLIC_FRONTEND_URL` `NEXT_PUBLIC_BACKEND_URL` `NEXT_PUBLIC_HOOKS_URL`
 
-- apps/worker:- `RESEND_API_KEY`
+- apps/primary-backend - `PORT` `JWT_PASSWORD` `FRONTEND_URL` `CORS_ORIGIN` `ACCESS_TOKEN_SECRET` `ACCESS_TOKEN_EXPIRY` `REFRESH_TOKEN_SECRET` `REFRESH_TOKEN_EXPIRY` `RESEND_API_KEY`
 
-- apps/frontend:- `NEXT_PUBLIC_FRONTEND_URL` `NEXT_PUBLIC_BACKEND_URL` `NEXT_PUBLIC_HOOKS_URL`
+- apps/hooks - `PORT`
 
-- apps/primary-backend:- `PORT` `JWT_PASSWORD` `CORS_ORIGIN` `ACCESS_TOKEN_SECRET` `ACCESS_TOKEN_EXPIRY` `REFRESH_TOKEN_SECRET` `REFRESH_TOKEN_EXPIRY` `RESEND_API_KEY`
+- apps/processor - `KAFKA_BROKER`
 
-- packages/database:- `DATABASE_URL`
+- apps/worker - `SOL_PRIVATE_KEY` `RESEND_API_KEY` `KAFKA_BROKER`
+
+- packages/database - `DATABASE_URL`
+
+- packages/kafka-config - `KAFKA-BROKER`
+
+- packages/mailer-config - `GMAIL` `RESEND_API_KEY`
 
 ## Installation 🔧
+
+**Docker Compose**
+
+**1.** Git Clone the Repository
+
+**2.** Navigate to the directory where the repository was downloaded
+
+**3.** Set up the [Environment Variables](#environment-setup) for each respective package
+
+**4.** Dockerize the Applications and start all the containers
+
+```
+docker-compose up
+```
+
+The following containers will be build (if not built already) and started:
+
+- **Frontend**: Main web application. Access it from [Port:3000](http://localhost:3000).
+
+- **Primary Backend**: The main primary backend of the application. Handles authorization, authentication and other API calls. Access it from [Port: 3001](http://localhost:3001)
+
+- **Hooks**: Manages custom webhook API calls. Access it from [Port:3002](http://localhost:3002).
+
+- **Processor**: Produces messages to the Kafka topic.
+
+- **Worker**: Consumes messages from the Kafka topic and processes actions.
+
+- **Postgres**: PostgreSQL database container. Access it from [Port:5432](http://localhost:5432).
+
+- **Zookeeper**: Coordinates Kafka's distributed system.
+
+- **Kafka**: Message queuing system. Access it from [Port:9092](http://localhost:9092).
+
+- **Prisma Service**: Generates the Prisma client, migrates the database, and seeds data.
+
+##
 
 **Local Installation**
 
@@ -231,6 +279,10 @@ npx turbo link
 - **Authentication:** Cookie-based authentication with bcrypt for validation
 
 - **Email Service:** Resend (for OTPs and other messages)
+
+- **Containerization:** Docker
+
+- **Container Orchestration:** Docker Compose
 
 - **Development Tools:** Turborepo, esbuild, Nodemon
 
