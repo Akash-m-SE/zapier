@@ -33,22 +33,12 @@ RUN echo "Runner Stage"
 WORKDIR /app
 
 # Creating a group and non-root user
-# RUN addgroup --system --gid 1001 primary-backend-server
-# RUN adduser --system --uid 1001 primary-backend-server
+RUN addgroup --system --gid 1001 primary-backend-server
+RUN adduser --system --uid 1001 primary-backend-server
+USER primary-backend-server
 
-COPY --from=installer /app .
-
-# Changing Ownership to non root user
-# RUN chown -R primary-backend-server:primary-backend-server /app
-# RUN chown -hR primary-backend-server:primary-backend-server /app
-
-# USER primary-backend-server
-
-# Make the entrypoint script executable
-# RUN chmod +x /app/apps/primary-backend/scripts/entrypoint.sh
+COPY --from=installer --chown=primary-backend-server:primary-backend-server /app .
 
 EXPOSE 3001
 
-CMD cd /app/apps/primary-backend && npm run dev
-
-# ENTRYPOINT ["/app/apps/primary-backend/scripts/entrypoint.sh"]
+CMD ["sh", "-c", "cd /app/apps/primary-backend && npm run dev"]

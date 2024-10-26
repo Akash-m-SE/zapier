@@ -33,10 +33,12 @@ RUN echo "Runner Stage"
 WORKDIR /app
 
 # Creating a group and non-root user
-# RUN addgroup --system --gid 1001 frontend
-# RUN adduser --system --uid 1001 frontend
+RUN addgroup --system --gid 1001 frontend
+RUN adduser --system --uid 1001 frontend
+USER frontend
 
-COPY --from=installer /app .
+# COPY --from=installer /app .
+COPY --from=installer --chown=frontend:frontend /app .
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
@@ -46,8 +48,6 @@ COPY --from=installer /app .
 # COPY --from=installer --chown=frontend:frontend /app/apps/frontend/.next/static ./apps/frontend/.next/static
 # COPY --from=installer --chown=frontend:frontend /app/apps/frontend/public ./apps/frontend/public
 
-# USER frontend
-
 EXPOSE 3000
 
-CMD cd /app/apps/frontend && npm run dev
+CMD ["sh", "-c", "cd /app/apps/frontend && npm run dev"]
